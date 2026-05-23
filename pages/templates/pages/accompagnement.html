@@ -1,0 +1,1212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accompagnement | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  /* ============================================================
+     VARIABLES — design system CCA
+     ============================================================ */
+  :root {
+    --primary:       #0A2540;
+    --primary-dark:  #0D1B2E;
+    --accent:        #00C9A7;
+    --accent-muted:  rgba(0, 201, 167, 0.15);
+    --accent-border: rgba(0, 201, 167, 0.25);
+    --light:         #F4F7FB;
+    --text-muted:    rgba(255, 255, 255, 0.55);
+    --text-dark:     #334155;
+    --card-border:   #e0e8f0;
+    --side-pad:      clamp(16px, 4vw, 56px);
+  }
+
+  /* ============================================================
+     RESET BOOTSTRAP CONTAINER
+     ============================================================ */
+  .accompagnement-page .container,
+  .accompagnement-page .container-fluid {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* ============================================================
+     PAGE WRAPPER
+     ============================================================ */
+  .accompagnement-page {
+    background: var(--light);
+    width: 100%;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .acc-hero {
+    background: var(--primary);
+    padding: 72px var(--side-pad) 56px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid var(--accent);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .acc-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.05);
+    pointer-events: none;
+  }
+
+  .acc-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 25%;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.04);
+    pointer-events: none;
+  }
+
+  .acc-hero__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .acc-hero__title {
+    color: #fff;
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  .acc-hero__title span { color: var(--accent); }
+
+  .acc-hero__desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.75;
+    max-width: 520px;
+    margin-bottom: 28px;
+  }
+
+  .acc-hero__cta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Stats hero */
+  .hero-stats {
+    display: flex;
+    gap: 0;
+    margin-top: 36px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 28px;
+  }
+
+  .hero-stat {
+    flex: 1;
+    text-align: center;
+    padding: 0 20px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .hero-stat:first-child { padding-left: 0; }
+  .hero-stat:last-child  { border-right: none; padding-right: 0; }
+
+  .hero-stat__num {
+    color: var(--accent);
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+
+  .hero-stat__lbl {
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Chat illustration dans le hero */
+  .hero-chat {
+    background: var(--primary-dark);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--accent-border);
+  }
+
+  .hero-chat__header {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .chat-messages { display: flex; flex-direction: column; gap: 14px; }
+
+  .chat-row { display: flex; gap: 10px; align-items: flex-start; }
+  .chat-row.reverse { flex-direction: row-reverse; }
+
+  .chat-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .chat-avatar.student  { background: var(--accent); color: var(--primary); }
+  .chat-avatar.mentor   { background: var(--primary); border: 1.5px solid var(--accent); color: var(--accent); }
+
+  .chat-bubble {
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 72%;
+    font-size: 12px;
+    line-height: 1.65;
+    color: #fff;
+  }
+
+  .chat-bubble.left  { background: #152236; border-radius: 0 8px 8px 8px; }
+  .chat-bubble.right { background: rgba(0,201,167,0.14); border-radius: 8px 0 8px 8px; }
+  .chat-bubble code  { color: var(--accent); font-family: monospace; }
+
+  .chat-status {
+    background: rgba(0,201,167,0.07);
+    border: 1px dashed var(--accent-border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 6px;
+  }
+
+  .chat-status__label { color: var(--accent); font-size: 10px; font-weight: 700; margin-bottom: 2px; }
+  .chat-status__info  { color: rgba(255,255,255,0.4); font-size: 11px; }
+
+  /* ============================================================
+     BANDE TYPES D'ACCOMPAGNEMENT (comme domaines)
+     ============================================================ */
+  .types-band {
+    background: var(--accent);
+    width: 100%;
+  }
+
+  .types-band__inner {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .types-band__label {
+    background: #009e84;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .types-band__item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 14px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary);
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    border-right: 1px solid rgba(0,0,0,0.08);
+    cursor: default;
+    transition: background 0.15s;
+  }
+
+  .types-band__item:last-child { border-right: none; }
+  .types-band__item:hover { background: rgba(0,0,0,0.06); }
+
+  /* ============================================================
+     CORPS DE PAGE
+     ============================================================ */
+  .acc-body {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 56px var(--side-pad) 64px;
+  }
+
+  /* ============================================================
+     SECTION LABELS
+     ============================================================ */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .section-title {
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .section-desc {
+    color: #667;
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 600px;
+    margin-bottom: 28px;
+  }
+
+  /* ============================================================
+     GRILLE ÉTAPES DU PARCOURS — 4 colonnes pleine largeur
+     ============================================================ */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 48px;
+  }
+
+  .step-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    border-top: 4px solid var(--accent);
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(10,37,64,0.10);
+  }
+
+  .step-number {
+    position: absolute;
+    top: -14px;
+    left: 22px;
+    background: var(--accent);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 900;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-family: monospace;
+    letter-spacing: 1px;
+  }
+
+  .step-icon {
+    width: 46px; height: 46px;
+    border-radius: 9px;
+    background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+
+  .step-title {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .step-desc {
+    color: #667;
+    font-size: 12px;
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  /* ============================================================
+     GRILLE FORMULES — 3 colonnes pleine largeur
+     ============================================================ */
+  .formules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 48px;
+  }
+
+  .formule-card {
+    border-radius: 12px;
+    padding: 32px 26px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--card-border);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .formule-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(10,37,64,0.12);
+  }
+
+  .formule-card.light { background: #fff; }
+  .formule-card.dark  { background: var(--primary); border-color: var(--accent-border); }
+  .formule-card.dark  .formule-title  { color: #fff; }
+  .formule-card.dark  .formule-price  { color: var(--accent); }
+  .formule-card.dark  .formule-period { color: var(--text-muted); }
+  .formule-card.dark  .formule-feature { color: rgba(255,255,255,0.75); }
+  .formule-card.dark  .formule-divider { border-color: rgba(255,255,255,0.08); }
+
+  /* Badge recommandé */
+  .formule-card.dark::before {
+    content: 'RECOMMANDÉ';
+    position: absolute;
+    top: 0; right: 0;
+    background: var(--accent);
+    color: var(--primary);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    padding: 5px 14px;
+    border-radius: 0 12px 0 8px;
+  }
+
+  .formule-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    font-family: monospace;
+  }
+
+  .formule-badge.free    { background: rgba(0,201,167,0.12); color: #008870; }
+  .formule-badge.premium { background: var(--accent-muted); color: var(--accent); }
+  .formule-badge.elite   { background: rgba(255,193,7,0.15); color: #b07d00; }
+
+  .formule-title {
+    color: var(--primary);
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .formule-price {
+    color: var(--primary);
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-family: monospace;
+  }
+
+  .formule-price span { font-size: 14px; font-weight: 600; }
+
+  .formule-period { color: #889; font-size: 12px; margin-bottom: 22px; }
+  .formule-divider { border: none; border-top: 1px solid var(--card-border); margin: 18px 0; }
+
+  .formule-features { display: flex; flex-direction: column; gap: 10px; flex: 1; margin-bottom: 24px; }
+
+  .formule-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--text-dark);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .feature-check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .feature-check.off {
+    background: #e0e8f0;
+  }
+
+  /* ============================================================
+     BOUTONS
+     ============================================================ */
+  .btn-cca {
+    padding: 12px 26px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .btn-cca:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-teal  { background: var(--accent); color: var(--primary); }
+  .btn-navy  { background: var(--primary); color: #fff; }
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 1.5px solid var(--card-border);
+    padding: 11px 24px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-outline-white {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    padding: 11px 24px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline-white:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ============================================================
+     SECTION TÉMOIGNAGES — fond sombre, pleine largeur
+     ============================================================ */
+  .temoignages-section {
+    background: var(--primary);
+    padding: 56px var(--side-pad);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .temoignages-section .section-label { color: var(--accent); }
+  .temoignages-section .section-title { color: #fff; }
+
+  .temoignages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .temoignage-card {
+    background: var(--primary-dark);
+    border-radius: 10px;
+    padding: 26px 22px;
+    border: 1px solid var(--accent-border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .temoignage-card:hover { border-color: var(--accent); }
+
+  .temoignage-stars { color: var(--accent); font-size: 13px; letter-spacing: 2px; }
+
+  .temoignage-text {
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    line-height: 1.75;
+    flex: 1;
+    font-style: italic;
+  }
+
+  .temoignage-author { display: flex; align-items: center; gap: 12px; }
+
+  .author-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .author-name { color: #fff; font-size: 13px; font-weight: 700; }
+  .author-role { color: rgba(255,255,255,0.4); font-size: 11px; }
+
+  /* ============================================================
+     SECTION FAQ — fond clair
+     ============================================================ */
+  .faq-section {
+    background: var(--light);
+    padding: 56px var(--side-pad);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .faq-item {
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+  }
+
+  .faq-question {
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .faq-toggle {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent-muted);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 900;
+    transition: background 0.15s;
+  }
+
+  .faq-answer {
+    padding: 0 20px 16px;
+    font-size: 12px;
+    color: #667;
+    line-height: 1.7;
+    display: none;
+  }
+
+  .faq-item.open .faq-answer { display: block; }
+  .faq-item.open .faq-toggle { background: var(--accent); color: var(--primary); }
+  .faq-item.open .faq-question { color: var(--accent); }
+
+  /* ============================================================
+     CTA FINAL — pleine largeur
+     ============================================================ */
+  .cta-section {
+    background: var(--primary-dark);
+    padding: 72px var(--side-pad);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid var(--accent-border);
+  }
+
+  .cta-section::before {
+    content: '{ mentor }';
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: monospace;
+    font-size: 180px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.02);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .cta-inner { position: relative; z-index: 1; }
+
+  .cta-badge {
+    display: inline-block;
+    background: var(--accent-muted);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+
+  .cta-title {
+    color: #fff;
+    font-size: clamp(22px, 3vw, 34px);
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  .cta-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto 32px;
+  }
+
+  .cta-btns { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+  .divider { height: 1px; background: #dde8f0; margin: 44px 0; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 1100px) {
+    .steps-grid    { grid-template-columns: repeat(2, 1fr); }
+    .formules-grid { grid-template-columns: repeat(3, 1fr); }
+    .acc-hero__inner { gap: 36px; }
+  }
+
+  @media (max-width: 900px) {
+    .acc-hero__inner    { grid-template-columns: 1fr; }
+    .temoignages-grid   { grid-template-columns: repeat(2, 1fr); }
+    .faq-grid           { grid-template-columns: 1fr; }
+    .formules-grid      { grid-template-columns: 1fr; }
+    .steps-grid         { grid-template-columns: repeat(2, 1fr); }
+    .types-band__inner  { flex-wrap: wrap; }
+    .types-band__label  { width: 100%; border-right: none; border-bottom: 1px solid rgba(0,0,0,0.08); justify-content: center; }
+    .hero-stat          { padding: 0 12px; }
+  }
+
+  @media (max-width: 600px) {
+    .acc-hero { padding: 48px var(--side-pad) 36px; }
+    .acc-body { padding: 32px var(--side-pad) 40px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .temoignages-grid { grid-template-columns: 1fr; }
+    .hero-stats { flex-wrap: wrap; gap: 16px; }
+    .hero-stat  { flex: 1 1 calc(50% - 16px); border-right: none; padding: 0; }
+    .cta-btns   { flex-direction: column; align-items: stretch; }
+    .btn-cca, .btn-outline-white { width: 100%; text-align: center; }
+    .types-band__item { flex: 1 1 calc(50% - 1px); border-bottom: 1px solid rgba(0,0,0,0.08); }
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="accompagnement-page">
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <div class="acc-hero">
+    <div class="acc-hero__inner">
+
+      <!-- Texte gauche -->
+      <div>
+        <div class="hero-tag">ACCOMPAGNEMENT</div>
+        <h1 class="acc-hero__title">
+          Tu n'apprendras<br>
+          pas <span>seul.</span>
+        </h1>
+        <p class="acc-hero__desc">
+          Challenge Code Academy ne se limite pas aux vidéos. Chaque apprenant bénéficie d'un suivi humain, d'un mentor dédié et d'un plan d'apprentissage taillé sur mesure — de la première ligne de code au premier projet professionnel.
+        </p>
+        <div class="acc-hero__cta">
+          <a href="{% url 'contact' %}" class="btn-cca btn-teal">Démarrer mon accompagnement ↗</a>
+          <a href="#formules" class="btn-outline-white">Voir les formules</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat__num">1:1</div>
+            <div class="hero-stat__lbl">Suivi perso</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat__num">48h</div>
+            <div class="hero-stat__lbl">Réponse max</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat__num">5</div>
+            <div class="hero-stat__lbl">Domaines couverts</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat__num">∞</div>
+            <div class="hero-stat__lbl">Sessions illimitées</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Illustration chat droite -->
+      <div class="hero-chat">
+        <div class="hero-chat__header">
+          <span class="live-dot"></span>
+          SESSION DE MENTORAT EN COURS
+        </div>
+        <div class="chat-messages">
+
+          <div class="chat-row">
+            <div class="chat-avatar student">M</div>
+            <div class="chat-bubble left">
+              Bonjour ! J'ai du mal à comprendre l'héritage en POO. Ma classe <code>Etudiant</code> hérite de <code>Personne</code> mais j'ai une erreur au constructeur…
+            </div>
+          </div>
+
+          <div class="chat-row reverse">
+            <div class="chat-avatar mentor">F</div>
+            <div class="chat-bubble right">
+              Montre-moi ton constructeur. Tu dois appeler <code>super()</code> en première instruction — c'est obligatoire en Java avant toute autre opération !
+            </div>
+          </div>
+
+          <div class="chat-row">
+            <div class="chat-avatar student">M</div>
+            <div class="chat-bubble left">
+              Aaah je vois ! Je l'avais mis après l'initialisation des attributs. Ça fonctionne maintenant 🎉
+            </div>
+          </div>
+
+          <div class="chat-row reverse">
+            <div class="chat-avatar mentor">F</div>
+            <div class="chat-bubble right">
+              Exactement. Maintenant essaie d'ajouter une méthode polymorphe <code>afficher()</code> dans les deux classes — on en reparle demain !
+            </div>
+          </div>
+
+          <div class="chat-status">
+            <div class="chat-status__label">FORMATEUR DISPONIBLE</div>
+            <div class="chat-status__info">Lun – Sam · 08h – 20h WAT · Réponse sous 2h</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BANDE TYPES D'ACCOMPAGNEMENT
+       ============================================================ -->
+  <div class="types-band">
+    <div class="types-band__inner">
+      <div class="types-band__label">TYPES</div>
+      <div class="types-band__item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Mentorat 1:1
+      </div>
+      <div class="types-band__item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Révision de code
+      </div>
+      <div class="types-band__item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Plan personnalisé
+      </div>
+      <div class="types-band__item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Communauté privée
+      </div>
+      <div class="types-band__item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Bilan de niveau
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CORPS PRINCIPAL
+       ============================================================ -->
+  <div class="acc-body">
+
+    <!-- ÉTAPES DU PARCOURS -->
+    <div class="section-label">COMMENT ÇA MARCHE</div>
+    <div class="section-title">Ton parcours d'accompagnement en 4 étapes</div>
+    <div class="section-desc">Un processus simple, humain et efficace — du premier contact jusqu'à la maîtrise complète de ta compétence cible.</div>
+
+    <div class="steps-grid">
+
+      <!-- Étape 1 -->
+      <div class="step-card">
+        <div class="step-number">ÉTAPE 01</div>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <div class="step-title">Bilan de démarrage</div>
+        <div class="step-desc">Un formulaire rapide et un appel de 15 min permettent d'évaluer ton niveau actuel, tes objectifs et ta disponibilité. C'est la base de tout plan sur-mesure.</div>
+      </div>
+
+      <!-- Étape 2 -->
+      <div class="step-card">
+        <div class="step-number">ÉTAPE 02</div>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="step-title">Plan d'apprentissage</div>
+        <div class="step-desc">Ton formateur construit un plan semaine par semaine : modules prioritaires, exercices ciblés, jalons intermédiaires et ressources adaptées à ton rythme.</div>
+      </div>
+
+      <!-- Étape 3 -->
+      <div class="step-card">
+        <div class="step-number">ÉTAPE 03</div>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <div class="step-title">Sessions de mentorat</div>
+        <div class="step-desc">Échanges réguliers par chat ou appel avec ton formateur. Pose tes questions, reçois des explications en temps réel et débloques tes blocages rapidement.</div>
+      </div>
+
+      <!-- Étape 4 -->
+      <div class="step-card">
+        <div class="step-number">ÉTAPE 04</div>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="step-title">Révision & Validation</div>
+        <div class="step-desc">Chaque exercice ou projet est relu, commenté et corrigé par le formateur. Tu reçois un feedback détaillé pour progresser à chaque itération.</div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- FORMULES -->
+    <div id="formules">
+      <div class="section-label">NOS FORMULES</div>
+      <div class="section-title">Choisis ton niveau d'accompagnement</div>
+      <div class="section-desc">Des offres adaptées à chaque profil — du débutant curieux au professionnel en reconversion.</div>
+    </div>
+
+    <div class="formules-grid">
+
+      <!-- Formule Starter -->
+      <div class="formule-card light">
+        <span class="formule-badge free">DÉCOUVERTE</span>
+        <div class="formule-title">Starter</div>
+        <div class="formule-price">Gratuit<span></span></div>
+        <div class="formule-period">Accès à vie · Sans engagement</div>
+        <hr class="formule-divider">
+        <div class="formule-features">
+          <div class="formule-feature">
+            <div class="feature-check">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            Accès aux formations gratuites
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            Ebooks gratuits téléchargeables
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            Accès au blog & articles
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check off">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <span style="color:#aaa;">Mentorat 1:1 avec formateur</span>
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check off">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <span style="color:#aaa;">Plan d'apprentissage personnalisé</span>
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check off">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <span style="color:#aaa;">Révision de code</span>
+          </div>
+        </div>
+        <a href="" class="btn-cca btn-navy" style="width:100%;text-align:center;">Commencer gratuitement</a>
+      </div>
+
+      <!-- Formule Pro — recommandée -->
+      <div class="formule-card dark">
+        <span class="formule-badge premium">POPULAIRE</span>
+        <div class="formule-title">Pro</div>
+        <div class="formule-price">15 000<span> FCFA</span></div>
+        <div class="formule-period">par mois · Résiliable à tout moment</div>
+        <hr class="formule-divider">
+        <div class="formule-features">
+          <div class="formule-feature" style="color:rgba(255,255,255,0.75);">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Tout Starter inclus
+          </div>
+          <div class="formule-feature" style="color:rgba(255,255,255,0.75);">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Accès formations premium
+          </div>
+          <div class="formule-feature" style="color:rgba(255,255,255,0.75);">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            2 sessions mentorat / semaine
+          </div>
+          <div class="formule-feature" style="color:rgba(255,255,255,0.75);">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Plan d'apprentissage personnalisé
+          </div>
+          <div class="formule-feature" style="color:rgba(255,255,255,0.75);">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Révision de code détaillée
+          </div>
+          <div class="formule-feature" style="color:rgba(255,255,255,0.75);">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Communauté privée apprenants
+          </div>
+        </div>
+        <a href="{% url 'contact' %}" class="btn-cca btn-teal" style="width:100%;text-align:center;">Choisir Pro ↗</a>
+      </div>
+
+      <!-- Formule Elite -->
+      <div class="formule-card light">
+        <span class="formule-badge elite">INTENSIF</span>
+        <div class="formule-title">Elite</div>
+        <div class="formule-price">30 000<span> FCFA</span></div>
+        <div class="formule-period">par mois · Accès prioritaire formateur</div>
+        <hr class="formule-divider">
+        <div class="formule-features">
+          <div class="formule-feature">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Tout Pro inclus
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Sessions illimitées avec formateur
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Appels vidéo hebdomadaires
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Projet guidé de A à Z
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Préparation entretiens techniques
+          </div>
+          <div class="formule-feature">
+            <div class="feature-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Réponse prioritaire sous 2h
+          </div>
+        </div>
+        <a href="{% url 'contact' %}" class="btn-cca btn-navy" style="width:100%;text-align:center;">Choisir Elite ↗</a>
+      </div>
+
+    </div>
+
+  </div>
+  <!-- /acc-body -->
+
+  <!-- ============================================================
+       TÉMOIGNAGES — fond sombre, pleine largeur
+       ============================================================ -->
+  <div class="temoignages-section">
+    <div class="section-label">TÉMOIGNAGES</div>
+    <div class="section-title" style="margin-bottom:28px;">Ce qu'en disent nos apprenants</div>
+
+    <div class="temoignages-grid">
+
+      <div class="temoignage-card">
+        <div class="temoignage-stars">★★★★★</div>
+        <div class="temoignage-text">
+          "Le suivi 1:1 a complètement changé ma façon d'apprendre. Mon formateur m'a aidé à comprendre des concepts que je bloquais depuis des semaines en seulement deux sessions."
+        </div>
+        <div class="temoignage-author">
+          <div class="author-avatar">K</div>
+          <div>
+            <div class="author-name">Kofi A.</div>
+            <div class="author-role">Étudiant en informatique · Accra</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="temoignage-card">
+        <div class="temoignage-stars">★★★★★</div>
+        <div class="temoignage-text">
+          "La révision de code est ce qui m'a le plus apporté. Avoir un vrai développeur qui commente chaque ligne de mon projet, c'est une chance rare. Mon code est maintenant propre et maintenable."
+        </div>
+        <div class="temoignage-author">
+          <div class="author-avatar">A</div>
+          <div>
+            <div class="author-name">Aminata D.</div>
+            <div class="author-role">Développeuse junior · Dakar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="temoignage-card">
+        <div class="temoignage-stars">★★★★★</div>
+        <div class="temoignage-text">
+          "Grâce au plan personnalisé, j'ai pu apprendre WINDEV en 3 mois tout en travaillant à temps plein. La flexibilité et la disponibilité du formateur sont exceptionnelles."
+        </div>
+        <div class="temoignage-author">
+          <div class="author-avatar">Y</div>
+          <div>
+            <div class="author-name">Yao T.</div>
+            <div class="author-role">Développeur WINDEV · Lomé</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FAQ
+       ============================================================ -->
+  <div class="faq-section">
+    <div style="padding: 0 0 28px;">
+      <div class="section-label">FAQ</div>
+      <div class="section-title">Questions fréquentes</div>
+    </div>
+
+    <div class="faq-grid">
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Comment se déroule le premier contact avec un formateur ?
+          <div class="faq-toggle">+</div>
+        </div>
+        <div class="faq-answer">Après ton inscription, tu reçois un lien pour remplir un formulaire de bilan. Ensuite, un formateur te contacte sous 48h pour un appel de 15 minutes afin de cadrer ton plan d'apprentissage.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Les sessions de mentorat ont-elles lieu en présentiel ?
+          <div class="faq-toggle">+</div>
+        </div>
+        <div class="faq-answer">Non, tout se passe à distance via chat, email ou appel vidéo. Tu peux suivre ton accompagnement depuis n'importe quel pays, à l'heure qui te convient le mieux.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Puis-je changer de formule en cours de route ?
+          <div class="faq-toggle">+</div>
+        </div>
+        <div class="faq-answer">Oui, tu peux passer de Starter à Pro ou à Elite à tout moment. Il suffit de contacter notre équipe et le changement est effectif dès le mois suivant.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Quelle différence entre mentorat et révision de code ?
+          <div class="faq-toggle">+</div>
+        </div>
+        <div class="faq-answer">Le mentorat est une session d'échange en temps réel pour répondre à tes questions et lever tes blocages. La révision de code, c'est l'analyse approfondie de ton travail avec des commentaires écrits détaillés sur chaque aspect.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Y a-t-il un engagement minimum de durée ?
+          <div class="faq-toggle">+</div>
+        </div>
+        <div class="faq-answer">Non, les formules Pro et Elite sont sans engagement. Tu peux résilier à tout moment. Nous recommandons néanmoins un minimum de 3 mois pour voir des progrès significatifs.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Quels domaines sont couverts par l'accompagnement ?
+          <div class="faq-toggle">+</div>
+        </div>
+        <div class="faq-answer">L'accompagnement couvre tous nos domaines : WINDEV, Algorithmes, POO, Bases de données et utilisation de l'IA. Tu peux aussi combiner plusieurs domaines dans un même plan personnalisé.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CTA FINAL
+       ============================================================ -->
+  <div class="cta-section">
+    <div class="cta-inner">
+      <div class="cta-badge">PRÊT À DÉMARRER ?</div>
+      <h2 class="cta-title">Commence ton accompagnement aujourd'hui.</h2>
+      <p class="cta-desc">
+        Rejoins des apprenants qui progressent chaque semaine grâce à un suivi humain, structuré et bienveillant. Ton premier bilan est gratuit.
+      </p>
+      <div class="cta-btns">
+        <a href="{% url 'contact' %}" class="btn-cca btn-teal">Demander mon bilan gratuit ↗</a>
+        <a href="{% url 'formation' %}" class="btn-outline-white">Explorer les formations</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- /accompagnement-page -->
+
+<script>
+  /* FAQ toggle — simple et natif, pas de dépendance */
+  document.querySelectorAll('.faq-question').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var item = this.parentElement;
+      /* Ferme les autres */
+      document.querySelectorAll('.faq-item.open').forEach(function(open) {
+        if (open !== item) open.classList.remove('open');
+      });
+      item.classList.toggle('open');
+    });
+  });
+</script>
+
+{% endblock %}

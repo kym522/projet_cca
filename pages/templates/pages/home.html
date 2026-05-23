@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Accueil | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  /* =============================================
+     CHIP
+  ============================================= */
+  .chip {
+    background: rgba(0, 201, 167, 0.12);
+    color: #00755f;
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: 700;
+    padding: 4px 11px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  /* =============================================
+     BARRE DOMAINES — pleine largeur, badges espacés
+  ============================================= */
+  .domaines-bar {
+    background: #00C9A7;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .domaines-bar__inner {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  /* Label "DOMAINES :" fixe à gauche */
+  .domaines-bar__label {
+    background: #009e84;           /* légèrement plus sombre pour contraster */
+    color: #0A2540;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(0,0,0,0.08);
+  }
+
+  /* Chaque badge prend une part égale de l'espace restant */
+  .domaines-bar__badge {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #0A2540;
+    font-family: monospace;
+    letter-spacing: 1px;
+    border-right: 1px solid rgba(0,0,0,0.08);
+    transition: background 0.15s;
+    text-decoration: none;
+    cursor: default;
+  }
+
+  .domaines-bar__badge:last-child {
+    border-right: none;
+  }
+
+  .domaines-bar__badge:hover {
+    background: rgba(0,0,0,0.06);
+  }
+
+  /* =============================================
+     GRILLES RESPONSIVES
+  ============================================= */
+  .offres-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .formations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .ebooks-blog-grid {
+    padding: 68px 36px;
+    background: #0A2540;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .accompagnement-grid {
+    padding: 68px 36px;
+    background: #F4F7FB;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .card-ia {
+    grid-column: span 2;
+  }
+
+  /* =============================================
+     CTA FINAL
+  ============================================= */
+  .cta-section {
+    background: #0A2540;
+    padding: 64px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-bg-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: monospace;
+    font-size: 200px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.022);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .cta-content { position: relative; z-index: 1; }
+
+  /* =============================================
+     RESPONSIVE
+  ============================================= */
+  @media (max-width: 1100px) {
+    .offres-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 900px) {
+    .offres-grid    { grid-template-columns: repeat(2, 1fr); }
+    .formations-grid { grid-template-columns: repeat(2, 1fr); }
+    .card-ia        { grid-column: span 2; }
+    .ebooks-blog-grid   { grid-template-columns: 1fr; padding: 48px 24px; gap: 40px; }
+    .accompagnement-grid { grid-template-columns: 1fr; padding: 48px 24px; gap: 32px; }
+    .cta-bg-text    { font-size: 120px; }
+
+    /* Barre domaines : label en haut sur tablette */
+    .domaines-bar__inner { flex-wrap: wrap; }
+    .domaines-bar__label { width: 100%; border-right: none; border-bottom: 1px solid rgba(0,0,0,0.08); justify-content: center; }
+  }
+
+  @media (max-width: 600px) {
+    .offres-grid    { grid-template-columns: 1fr; }
+    .formations-grid { grid-template-columns: 1fr; }
+    .card-ia        { grid-column: span 1; }
+    .ebooks-blog-grid   { padding: 36px 16px; gap: 32px; }
+    .accompagnement-grid { padding: 36px 16px; gap: 24px; }
+    .cta-section    { padding: 48px 16px; }
+    .cta-bg-text    { font-size: 80px; }
+
+    .cta-buttons { flex-direction: column; align-items: stretch; }
+    .btn-primary, .btn-secondary, .btn-accompagnement { width: 100%; text-align: center; }
+
+    /* Barre domaines : 2 badges par ligne sur mobile */
+    .domaines-bar__badge {
+      flex: 1 1 calc(50% - 1px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="py-5" style="background:#0A2540;">
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <!-- LEFT -->
+      <div class="col-12 col-lg-6 text-white position-relative">
+        <div class="small fw-bold mb-2" style="color:#00C9A7; letter-spacing:3px;">
+          PLATEFORME DE FORMATION NUMÉRIQUE
+        </div>
+        <h1 class="fw-bold display-5">
+          Apprends à coder.<br>
+          <span style="color:#00C9A7;">Gratuitement</span> ou à ton rythme.<br>
+          Avec un vrai suivi.
+        </h1>
+        <p class="text-white-50 mt-3">
+          Challenge Code Academy est une plateforme de formations en ligne — gratuites et payantes — spécialisée en WINDEV, Algorithmes, POO, Bases de données et IA. Accompagnement personnalisé, ebooks et blog inclus.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <button class="btn fw-bold" style="background:#00C9A7;color:#0A2540;">Explorer les formations ↗</button>
+          <button class="btn btn-outline-light">Parcourir le blog</button>
+        </div>
+        <!-- STATS -->
+        <div class="d-flex flex-wrap gap-4 mt-4">
+          <div>
+            <div class="fw-bold text-white fs-4">Gratuit<span style="color:#00C9A7;">+</span></div>
+            <small class="text-white-50">Formations accessibles</small>
+          </div>
+          <div class="vr text-white"></div>
+          <div>
+            <div class="fw-bold text-white fs-4">5 <span style="color:#00C9A7;">domaines</span></div>
+            <small class="text-white-50">Expertises clés</small>
+          </div>
+          <div class="vr text-white"></div>
+          <div>
+            <div class="fw-bold text-white fs-4">Suivi <span style="color:#00C9A7;">1:1</span></div>
+            <small class="text-white-50">Accompagnement perso</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- TERMINAL -->
+      <div class="col-12 col-lg-6 mt-4 mt-lg-0">
+        <div class="rounded border border-success overflow-hidden">
+          <div class="bg-dark p-2 d-flex align-items-center gap-2">
+            <span class="rounded-circle bg-danger"  style="width:10px;height:10px;"></span>
+            <span class="rounded-circle bg-warning" style="width:10px;height:10px;"></span>
+            <span class="rounded-circle bg-success" style="width:10px;height:10px;"></span>
+            <small class="text-white-50 ms-2">challenge_code_academy.pc</small>
+          </div>
+          <div class="bg-black text-success p-3" style="font-family:monospace;font-size:12px;">
+            <div class="text-white-50">// Algorithme de tri sélection</div>
+            <div><span class="text-danger">PROCEDURE</span> <span class="text-success">TriSelection</span>(tabEntiers)</div>
+            <div class="ms-3 text-info">nMin, i, j SONT ENTIER</div>
+            <div class="ms-3"><span class="text-danger">POUR</span> i = 1 À Taille(tabEntiers)-1</div>
+            <div class="ms-4">nMin ← i</div>
+            <div class="ms-4"><span class="text-danger">POUR</span> j = i+1 À Taille(tabEntiers)</div>
+            <div class="ms-5"><span class="text-danger">SI</span> tabEntiers[j] &lt; tabEntiers[nMin]</div>
+            <div class="ms-5">nMin ← j</div>
+            <div class="ms-3">Echanger(tabEntiers, i, nMin)</div>
+            <div><span class="text-danger">FIN PROCÉDURE</span></div>
+            <div class="mt-2 bg-success bg-opacity-25 text-success p-2 rounded">
+              ▶ Formation Algorithmes — Module 3 disponible
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DOMAINES — barre pleine largeur, badges répartis également
+     ============================================================ -->
+<div class="domaines-bar">
+  <div class="domaines-bar__inner">
+    <div class="domaines-bar__label">DOMAINES</div>
+    <a href="#" class="domaines-bar__badge">WINDEV</a>
+    <a href="#" class="domaines-bar__badge">Algorithmes</a>
+    <a href="#" class="domaines-bar__badge">POO</a>
+    <a href="#" class="domaines-bar__badge">BDD</a>
+    <a href="#" class="domaines-bar__badge">IA</a>
+  </div>
+</div>
+
+<!-- CE QUE NOUS OFFRONS -->
+<div style="padding:68px 36px;background:#F4F7FB;">
+  <div style="text-align:center;margin-bottom:44px;">
+    <div style="background:rgba(0,201,167,0.12);color:#0A2540;font-size:10px;font-weight:700;letter-spacing:2.5px;padding:5px 14px;border-radius:4px;display:inline-block;margin-bottom:14px;">NOS OFFRES</div>
+    <h2 style="color:#0A2540;font-size:30px;font-weight:900;line-height:1.25;">Tout ce dont tu as besoin pour progresser</h2>
+  </div>
+  <div class="offres-grid">
+
+    <div style="background:#fff;border-radius:10px;padding:28px 22px;border:1px solid #e0e8f0;border-top:4px solid #00C9A7;">
+      <div style="width:44px;height:44px;background:#0A2540;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <div style="background:rgba(0,201,167,0.12);color:#00755f;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;display:inline-block;margin-bottom:10px;letter-spacing:1px;">GRATUIT</div>
+      <h3 style="color:#0A2540;font-size:16px;font-weight:900;margin-bottom:8px;">Formations gratuites</h3>
+      <p style="color:#667;font-size:13px;line-height:1.65;">Accède à des cours complets sans bourse délier. Algorithmes, POO, bases de données — les fondamentaux sont offerts.</p>
+    </div>
+
+    <div style="background:#0A2540;border-radius:10px;padding:28px 22px;border-top:4px solid #00C9A7;">
+      <div style="width:44px;height:44px;background:rgba(0,201,167,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div style="background:rgba(0,201,167,0.18);color:#00C9A7;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;display:inline-block;margin-bottom:10px;letter-spacing:1px;">PREMIUM</div>
+      <h3 style="color:#fff;font-size:16px;font-weight:900;margin-bottom:8px;">Formations payantes</h3>
+      <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.65;">Cours approfondis en WINDEV, projets guidés, exercices corrigés et accès à vie au contenu mis à jour régulièrement.</p>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:28px 22px;border:1px solid #e0e8f0;border-top:4px solid #00C9A7;">
+      <div style="width:44px;height:44px;background:#0A2540;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div style="background:rgba(0,201,167,0.12);color:#00755f;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;display:inline-block;margin-bottom:10px;letter-spacing:1px;">SUIVI 1:1</div>
+      <h3 style="color:#0A2540;font-size:16px;font-weight:900;margin-bottom:8px;">Suivi & Accompagnement</h3>
+      <p style="color:#667;font-size:13px;line-height:1.65;">Sessions personnalisées avec un mentor, retours sur tes projets, aide au déblocage et plan d'apprentissage sur-mesure.</p>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:28px 22px;border:1px solid #e0e8f0;border-top:4px solid #00C9A7;">
+      <div style="width:44px;height:44px;background:#0A2540;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      </div>
+      <div style="background:rgba(0,201,167,0.12);color:#00755f;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;display:inline-block;margin-bottom:10px;letter-spacing:1px;">RESSOURCES</div>
+      <h3 style="color:#0A2540;font-size:16px;font-weight:900;margin-bottom:8px;">Ebooks & Blog</h3>
+      <p style="color:#667;font-size:13px;line-height:1.65;">Guides téléchargeables, articles techniques et veille numérique pour approfondir tes connaissances à ton rythme.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- FORMATIONS PHARES -->
+<div style="padding:68px 36px;background:#fff;">
+  <div style="text-align:center;margin-bottom:44px;">
+    <div style="background:rgba(0,201,167,0.12);color:#0A2540;font-size:10px;font-weight:700;letter-spacing:2.5px;padding:5px 14px;border-radius:4px;display:inline-block;margin-bottom:14px;">FORMATIONS PHARES</div>
+    <h2 style="color:#0A2540;font-size:30px;font-weight:900;">5 domaines, une expertise solide</h2>
+    <p style="color:#778;font-size:14px;margin-top:10px;">Formations pensées pour les étudiants et professionnels francophones d'Afrique de l'Ouest</p>
+  </div>
+  <div class="formations-grid">
+
+    <div style="background:#F4F7FB;border-radius:10px;padding:26px 22px;border-left:4px solid #00C9A7;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div style="background:#0A2540;color:#00C9A7;font-family:monospace;font-size:22px;font-weight:900;width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;">W</div>
+        <span style="background:#00C9A7;color:#0A2540;font-size:9px;font-weight:800;padding:3px 9px;border-radius:3px;">GRATUIT + PAYANT</span>
+      </div>
+      <h3 style="color:#0A2540;font-size:17px;font-weight:900;margin-bottom:8px;">WINDEV</h3>
+      <p style="color:#667;font-size:12px;line-height:1.65;margin-bottom:14px;">Maîtrise le RAD le plus puissant du marché francophone. De l'interface utilisateur aux états, en passant par le WLangage et les bases de données.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <span class="chip">WLangage</span><span class="chip">Fenêtres</span><span class="chip">États</span><span class="chip">HyperFileSQL</span>
+      </div>
+    </div>
+
+    <div style="background:#F4F7FB;border-radius:10px;padding:26px 22px;border-left:4px solid #00C9A7;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div style="background:#0A2540;color:#00C9A7;font-family:monospace;font-size:18px;font-weight:900;width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;">Algo</div>
+        <span style="background:#e8f8f5;color:#00755f;font-size:9px;font-weight:800;padding:3px 9px;border-radius:3px;">GRATUIT</span>
+      </div>
+      <h3 style="color:#0A2540;font-size:17px;font-weight:900;margin-bottom:8px;">Algorithmes</h3>
+      <p style="color:#667;font-size:12px;line-height:1.65;margin-bottom:14px;">Pense avant de coder. Structures de données, tris, recherches, récursivité et complexité algorithmique expliqués simplement.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <span class="chip">Tri</span><span class="chip">Récursivité</span><span class="chip">Graphes</span><span class="chip">Complexité</span>
+      </div>
+    </div>
+
+    <div style="background:#0A2540;border-radius:10px;padding:26px 22px;border-left:4px solid #00C9A7;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div style="background:rgba(0,201,167,0.18);color:#00C9A7;font-family:monospace;font-size:16px;font-weight:900;width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;">POO</div>
+        <span style="background:rgba(0,201,167,0.18);color:#00C9A7;font-size:9px;font-weight:800;padding:3px 9px;border-radius:3px;">GRATUIT + PAYANT</span>
+      </div>
+      <h3 style="color:#fff;font-size:17px;font-weight:900;margin-bottom:8px;">Prog. Orientée Objet</h3>
+      <p style="color:rgba(255,255,255,0.6);font-size:12px;line-height:1.65;margin-bottom:14px;">Classes, objets, héritage, polymorphisme et design patterns. Les principes fondateurs du développement professionnel moderne.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <span style="background:rgba(0,201,167,0.18);color:#00C9A7;font-size:10px;font-family:monospace;padding:4px 11px;border-radius:3px;">Classes</span>
+        <span style="background:rgba(0,201,167,0.18);color:#00C9A7;font-size:10px;font-family:monospace;padding:4px 11px;border-radius:3px;">Héritage</span>
+        <span style="background:rgba(0,201,167,0.18);color:#00C9A7;font-size:10px;font-family:monospace;padding:4px 11px;border-radius:3px;">SOLID</span>
+      </div>
+    </div>
+
+    <div style="background:#F4F7FB;border-radius:10px;padding:26px 22px;border-left:4px solid #00C9A7;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div style="background:#0A2540;color:#00C9A7;font-family:monospace;font-size:16px;font-weight:900;width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;">BDD</div>
+        <span style="background:#e8f8f5;color:#00755f;font-size:9px;font-weight:800;padding:3px 9px;border-radius:3px;">GRATUIT</span>
+      </div>
+      <h3 style="color:#0A2540;font-size:17px;font-weight:900;margin-bottom:8px;">Bases de données</h3>
+      <p style="color:#667;font-size:12px;line-height:1.65;margin-bottom:14px;">Modélisation, SQL, normalisation, procédures stockées et optimisation de requêtes. La colonne vertébrale de toute application sérieuse.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <span class="chip">SQL</span><span class="chip">MCD/MLD</span><span class="chip">MySQL</span><span class="chip">Merise</span>
+      </div>
+    </div>
+
+    <div class="card-ia" style="background:#F4F7FB;border-radius:10px;padding:26px 22px;border-left:4px solid #00C9A7;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div style="background:#0A2540;color:#00C9A7;font-size:12px;font-weight:900;width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;">AI<br>⚡</div>
+        <span style="background:#00C9A7;color:#0A2540;font-size:9px;font-weight:800;padding:3px 9px;border-radius:3px;">NOUVEAU</span>
+      </div>
+      <h3 style="color:#0A2540;font-size:17px;font-weight:900;margin-bottom:8px;">Utiliser l'IA comme accélérateur d'apprentissage</h3>
+      <p style="color:#667;font-size:12px;line-height:1.65;margin-bottom:14px;">Apprends à utiliser ChatGPT, Copilot et autres outils IA pour coder plus vite, déboguer efficacement, générer des jeux de données et comprendre des concepts complexes. L'IA ne remplace pas le développeur — elle le décuple.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <span class="chip">Prompting</span><span class="chip">GitHub Copilot</span><span class="chip">ChatGPT</span><span class="chip">Auto-débogage</span><span class="chip">Génération de code</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="text-align:center;margin-top:32px;">
+    <a href="" style="background:#0A2540;color:#fff;border:none;padding:13px 32px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;">Voir toutes les formations ↗</a>
+  </div>
+</div>
+
+<!-- EBOOKS + BLOG -->
+<div class="ebooks-blog-grid">
+
+  <div>
+    <div style="background:rgba(0,201,167,0.14);color:#00C9A7;font-size:10px;font-weight:700;letter-spacing:2.5px;padding:5px 14px;border-radius:4px;display:inline-block;margin-bottom:18px;">EBOOKS</div>
+    <h2 style="color:#fff;font-size:24px;font-weight:900;margin-bottom:12px;">Des guides pratiques à emporter</h2>
+    <p style="color:rgba(255,255,255,0.55);font-size:13px;line-height:1.7;margin-bottom:24px;">Télécharge nos ebooks rédigés par nos formateurs pour consolider tes apprentissages hors connexion.</p>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <div style="background:#0D1B2E;border-radius:8px;padding:16px 18px;display:flex;align-items:center;gap:14px;border-left:3px solid #00C9A7;">
+        <div style="width:36px;height:44px;background:rgba(0,201,167,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="color:#fff;font-size:13px;font-weight:700;">Les 50 algorithmes à connaître</div>
+          <div style="color:rgba(255,255,255,0.4);font-size:11px;">PDF · 84 pages · Gratuit</div>
+        </div>
+        <span style="color:#00C9A7;font-size:12px;cursor:pointer;">↓</span>
+      </div>
+
+      <div style="background:#0D1B2E;border-radius:8px;padding:16px 18px;display:flex;align-items:center;gap:14px;border-left:3px solid #00C9A7;">
+        <div style="width:36px;height:44px;background:rgba(0,201,167,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="color:#fff;font-size:13px;font-weight:700;">Débuter avec WINDEV — Guide complet</div>
+          <div style="color:rgba(255,255,255,0.4);font-size:11px;">PDF · 120 pages · Premium</div>
+        </div>
+        <span style="color:#00C9A7;font-size:12px;cursor:pointer;">↓</span>
+      </div>
+
+      <div style="background:#0D1B2E;border-radius:8px;padding:16px 18px;display:flex;align-items:center;gap:14px;border-left:3px solid #00C9A7;">
+        <div style="width:36px;height:44px;background:rgba(0,201,167,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="color:#fff;font-size:13px;font-weight:700;">Prompter l'IA pour mieux coder</div>
+          <div style="color:rgba(255,255,255,0.4);font-size:11px;">PDF · 56 pages · Gratuit</div>
+        </div>
+        <span style="color:#00C9A7;font-size:12px;cursor:pointer;">↓</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div>
+    <div style="background:rgba(0,201,167,0.14);color:#00C9A7;font-size:10px;font-weight:700;letter-spacing:2.5px;padding:5px 14px;border-radius:4px;display:inline-block;margin-bottom:18px;">BLOG</div>
+    <h2 style="color:#fff;font-size:24px;font-weight:900;margin-bottom:12px;">Articles & veille tech</h2>
+    <p style="color:rgba(255,255,255,0.55);font-size:13px;line-height:1.7;margin-bottom:24px;">Conseils, tutoriels et actualités du monde du développement rédigés par la communauté Challenge Code.</p>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <div style="border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:14px;">
+        <div style="color:#00C9A7;font-size:10px;font-weight:700;margin-bottom:5px;letter-spacing:1px;">WINDEV · 5 min</div>
+        <div style="color:#fff;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:4px;">Créer sa première fenêtre WINDEV en 10 étapes</div>
+        <div style="color:rgba(255,255,255,0.4);font-size:11px;">Publié le 2 Avril 2026</div>
+      </div>
+
+      <div style="border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:14px;">
+        <div style="color:#00C9A7;font-size:10px;font-weight:700;margin-bottom:5px;letter-spacing:1px;">IA · 8 min</div>
+        <div style="color:#fff;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:4px;">Comment j'utilise ChatGPT pour déboguer mon code POO</div>
+        <div style="color:rgba(255,255,255,0.4);font-size:11px;">Publié le 28 Mars 2026</div>
+      </div>
+
+      <div style="border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:14px;">
+        <div style="color:#00C9A7;font-size:10px;font-weight:700;margin-bottom:5px;letter-spacing:1px;">ALGORITHMES · 6 min</div>
+        <div style="color:#fff;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:4px;">Récursivité vs itération : quand choisir quoi ?</div>
+        <div style="color:rgba(255,255,255,0.4);font-size:11px;">Publié le 20 Mars 2026</div>
+      </div>
+
+      <button style="background:transparent;color:#00C9A7;border:1.5px solid rgba(0,201,167,0.4);padding:10px 22px;border-radius:5px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;text-align:left;">Lire tous les articles →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ACCOMPAGNEMENT -->
+<div class="accompagnement-grid">
+
+  <div>
+    <div style="background:rgba(0,201,167,0.12);color:#0A2540;font-size:10px;font-weight:700;letter-spacing:2.5px;padding:5px 14px;border-radius:4px;display:inline-block;margin-bottom:18px;">ACCOMPAGNEMENT</div>
+    <h2 style="color:#0A2540;font-size:28px;font-weight:900;margin-bottom:14px;">Tu n'apprendras pas seul.</h2>
+    <p style="color:#556;font-size:14px;line-height:1.75;margin-bottom:20px;">Contrairement aux plateformes qui te laissent face à des vidéos, Challenge Code Academy propose un suivi humain et personnalisé à chaque étape de ton parcours.</p>
+
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#00C9A7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div style="color:#0A2540;font-size:13px;font-weight:700;">Bilan de démarrage</div>
+          <div style="color:#778;font-size:12px;">Évaluation de ton niveau et plan d'apprentissage personnalisé</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#00C9A7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div style="color:#0A2540;font-size:13px;font-weight:700;">Sessions de mentorat</div>
+          <div style="color:#778;font-size:12px;">Échanges réguliers avec un formateur pour lever tes blocages</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#00C9A7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div style="color:#0A2540;font-size:13px;font-weight:700;">Révision de code</div>
+          <div style="color:#778;font-size:12px;">Retours détaillés sur tes exercices et projets pratiques</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:#00C9A7;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div style="color:#0A2540;font-size:13px;font-weight:700;">Communauté privée</div>
+          <div style="color:#778;font-size:12px;">Accès au groupe d'apprenants actifs pour s'entraider</div>
+        </div>
+      </div>
+    </div>
+
+    <a href="" style="background:#0A2540;color:#fff;border:none;padding:13px 28px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;">Découvrir l'accompagnement ↗</a>
+  </div>
+
+  <div style="background:#0A2540;border-radius:10px;padding:24px;border:1px solid rgba(0,201,167,0.2);">
+    <div style="color:#00C9A7;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:16px;">SESSION DE MENTORAT</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#00C9A7;display:flex;align-items:center;justify-content:center;color:#0A2540;font-size:11px;font-weight:900;flex-shrink:0;">M</div>
+        <div style="background:#0D1B2E;border-radius:0 8px 8px 8px;padding:10px 14px;max-width:260px;">
+          <div style="color:#fff;font-size:12px;line-height:1.6;">Bonjour ! J'ai du mal à comprendre l'héritage en POO. Ma classe <code style="color:#00C9A7;">Etudiant</code> hérite de <code style="color:#00C9A7;">Personne</code> mais j'ai une erreur…</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:flex-start;flex-direction:row-reverse;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#0D1B2E;border:1.5px solid #00C9A7;display:flex;align-items:center;justify-content:center;color:#00C9A7;font-size:11px;font-weight:900;flex-shrink:0;">F</div>
+        <div style="background:rgba(0,201,167,0.15);border-radius:8px 0 8px 8px;padding:10px 14px;max-width:260px;">
+          <div style="color:#fff;font-size:12px;line-height:1.6;">Montre-moi ton constructeur. Tu dois appeler <code style="color:#00C9A7;">super()</code> avant tout dans la classe enfant — c'est obligatoire en Java !</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#00C9A7;display:flex;align-items:center;justify-content:center;color:#0A2540;font-size:11px;font-weight:900;flex-shrink:0;">M</div>
+        <div style="background:#0D1B2E;border-radius:0 8px 8px 8px;padding:10px 14px;max-width:260px;">
+          <div style="color:#fff;font-size:12px;line-height:1.6;">Aaah ! Je n'avais pas vu ça. Ça fonctionne maintenant 🎉 Merci !</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(0,201,167,0.08);border-radius:6px;padding:10px 12px;border:1px dashed rgba(0,201,167,0.3);margin-top:4px;">
+        <div style="color:#00C9A7;font-size:10px;font-weight:700;margin-bottom:3px;">FORMATEUR</div>
+        <div style="color:rgba(255,255,255,0.5);font-size:11px;">Disponible · Lun – Sam · 08h – 20h WAT</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA FINAL -->
+<div class="cta-section">
+  <div class="cta-bg-text">{ learn }</div>
+  <div class="cta-content">
+    <div style="background:rgba(0,201,167,0.14);color:#00C9A7;font-size:10px;font-weight:700;letter-spacing:2.5px;padding:5px 14px;border-radius:4px;display:inline-block;margin-bottom:16px;">REJOINS LA COMMUNAUTÉ</div>
+    <h2 style="color:#fff;font-size:32px;font-weight:900;margin-bottom:12px;">Commence gratuitement. Aujourd'hui.</h2>
+    <p style="color:rgba(255,255,255,0.55);font-size:15px;line-height:1.65;margin-bottom:32px;max-width:480px;margin-left:auto;margin-right:auto;">Accède dès maintenant à nos formations gratuites, parcours les ebooks et rejoins une communauté d'apprenants qui progressent ensemble.</p>
+    <div class="cta-buttons" style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;">
+      <a href="" class="btn-primary" style="background:#00C9A7;color:#0A2540;border:none;padding:15px 36px;border-radius:6px;font-weight:800;font-size:15px;cursor:pointer;text-decoration:none;display:inline-block;">Créer mon compte gratuit ↗</a>
+      <a href="" class="btn-secondary" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.3);padding:14px 32px;border-radius:6px;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block;">Voir les offres premium</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,872 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Formations | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  /* ============================================================
+     VARIABLES — design system CCA
+     ============================================================ */
+  :root {
+    --primary:       #0A2540;
+    --primary-dark:  #0D1B2E;
+    --accent:        #00C9A7;
+    --accent-muted:  rgba(0, 201, 167, 0.15);
+    --accent-border: rgba(0, 201, 167, 0.25);
+    --light:         #F4F7FB;
+    --text-muted:    rgba(255, 255, 255, 0.55);
+    --text-dark:     #334155;
+    --card-border:   #e0e8f0;
+
+    /* Espacement latéral unique — change ici pour ajuster partout */
+    --side-pad: clamp(16px, 4vw, 56px);
+  }
+
+  /* ============================================================
+     RESET BOOTSTRAP CONTAINER — on gère nous-mêmes la largeur
+     ============================================================ */
+  .formations-page .container,
+  .formations-page .container-fluid,
+  .formations-page .container-lg,
+  .formations-page .container-xl {
+    max-width: 100% !important;
+    padding-left: 0  !important;
+    padding-right: 0 !important;
+  }
+
+  /* ============================================================
+     PAGE WRAPPER — pleine largeur
+     ============================================================ */
+  .formations-page {
+    background: var(--light);
+    width: 100%;
+  }
+
+  /* ============================================================
+     HERO — pleine largeur
+     ============================================================ */
+  .formations-hero {
+    background: var(--primary);
+    padding: 72px var(--side-pad) 56px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid var(--accent);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .formations-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.05);
+    pointer-events: none;
+  }
+
+  .formations-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 30%;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.04);
+    pointer-events: none;
+  }
+
+  /* Hero inner : plus de max-width, occupe toute la largeur disponible */
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    color: #fff;
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .hero-title span { color: var(--accent); }
+
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    /* Laisse respirer le texte sur grands écrans */
+    max-width: 680px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .stat-item { display: flex; flex-direction: column; gap: 3px; }
+
+  .stat-num {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .stat-num span { color: var(--accent); }
+
+  .stat-lbl {
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .stat-sep {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  /* ============================================================
+     CONTENU PRINCIPAL — padding latéral fluide, aucun max-width
+     ============================================================ */
+  .formations-body {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 40px var(--side-pad) 56px;
+  }
+
+  /* ============================================================
+     FILTRES — barre pleine largeur, boutons répartis également
+     ============================================================ */
+  .filters {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 36px;
+    gap: 6px;
+    box-sizing: border-box;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #889;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-right: 14px;
+    border-right: 1px solid var(--card-border);
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Chaque bouton prend une part égale de l'espace restant */
+  .filters .filter-btn {
+    flex: 1;
+    text-align: center;
+    padding: 9px 6px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    background: none;
+    white-space: nowrap;
+  }
+
+  .filter-btn.active   { background: var(--primary); color: var(--accent); border-color: var(--primary); }
+  .filter-btn.inactive { background: transparent; color: #667; border-color: transparent; }
+  .filter-btn.inactive:hover { background: var(--light); border-color: var(--card-border); color: var(--primary); }
+  .filter-btn.free     { border-color: var(--accent); color: var(--accent); background: transparent; }
+  .filter-btn.free:hover,
+  .filter-btn.free.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+
+  /* Tablette : wrap autorisé si écran trop étroit */
+  @media (max-width: 900px) {
+    .filters { flex-wrap: wrap; }
+    .filter-label { width: 100%; border-right: none; padding-right: 0; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; margin-bottom: 2px; }
+    .filters .filter-btn { flex: 1 1 calc(33% - 6px); }
+  }
+
+  /* Mobile : 2 boutons par ligne */
+  @media (max-width: 500px) {
+    .filters .filter-btn { flex: 1 1 calc(50% - 6px); }
+  }
+
+  /* ============================================================
+     LABELS DE SECTION
+     ============================================================ */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .section-title {
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 22px;
+  }
+
+  /* ============================================================
+     GRILLES — colonnes égales sur toute la largeur, responsive
+     ============================================================ */
+
+  /*
+    Formations : 4 cartes = 4 colonnes égales sur desktop.
+    La carte IA (featured) prend toujours toute la largeur (grid-column: 1 / -1).
+  */
+  .grid-formations {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  /* Ebooks : 3 cartes = 3 colonnes égales sur desktop */
+  .grid-ebooks {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  /* ---- Tablette (≤ 1024px) ---- */
+  @media (max-width: 1024px) {
+    .grid-formations {
+      grid-template-columns: repeat(2, 1fr); /* 2 colonnes = 2 cartes par ligne */
+    }
+    .grid-ebooks {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* ---- Mobile (≤ 600px) ---- */
+  @media (max-width: 600px) {
+    .grid-formations {
+      grid-template-columns: 1fr; /* 1 carte par ligne */
+    }
+    .grid-ebooks {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ============================================================
+     CARTES FORMATIONS
+     ============================================================ */
+  .formation-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .formation-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(10, 37, 64, 0.10);
+  }
+
+  .card-accent-bar { height: 4px; }
+
+  .card-body {
+    padding: 22px 20px 16px;
+    flex: 1;
+  }
+
+  .card-footer {
+    padding: 14px 20px;
+    border-top: 1px solid #f0f4f8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .badge-cca {
+    display: inline-block;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .badge-free    { background: rgba(0,201,167,0.12); color: #008870; }
+  .badge-premium { background: var(--primary); color: var(--accent); }
+  .badge-new     { background: var(--accent); color: var(--primary); }
+  .badge-domain  { background: #F0F4F8; color: #445; }
+
+  .card-title {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    color: #667;
+    font-size: 12px;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  .meta-info {
+    color: #889;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ============================================================
+     BOUTONS
+     ============================================================ */
+  .btn-cca {
+    padding: 7px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-cca:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-teal  { background: var(--accent); color: var(--primary); }
+  .btn-navy  { background: var(--primary); color: #fff; }
+  .btn-ghost {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    padding: 10px 18px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ============================================================
+     CARTE FEATURED — IA (pleine largeur dans la grille)
+     ============================================================ */
+  .featured-card {
+    background: var(--primary);
+    border-radius: 10px;
+    padding: 30px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    /* Occupe toute la largeur disponible quel que soit le nombre de colonnes */
+    grid-column: 1 / -1;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .featured-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(0,201,167,0.15);
+  }
+
+  .featured-card::before {
+    content: '';
+    position: absolute;
+    right: -30px; top: -30px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(0,201,167,0.06);
+    pointer-events: none;
+  }
+
+  .featured-inner { position: relative; z-index: 1; }
+
+  /* Sur grands écrans, le contenu de la featured va côte à côte */
+  .featured-layout {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .featured-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .featured-tags span {
+    background: rgba(0,201,167,0.18);
+    color: var(--accent);
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  /* ============================================================
+     EBOOKS
+     ============================================================ */
+  .ebook-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    padding: 18px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ebook-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(10,37,64,0.08);
+  }
+
+  .ebook-cover {
+    width: 48px;
+    height: 62px;
+    border-radius: 4px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-left: 4px solid var(--accent);
+  }
+
+  .ebook-title { color: var(--primary); font-size: 13px; font-weight: 700; margin-bottom: 4px; line-height: 1.4; }
+  .ebook-meta  { color: #889; font-size: 11px; }
+
+  /* ============================================================
+     CTA ACCOMPAGNEMENT — pleine largeur
+     ============================================================ */
+  .cta-accompagnement {
+    background: var(--primary);
+    border-radius: 10px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-left: 6px solid var(--accent);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cta-accompagnement__label {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .cta-accompagnement__title {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .cta-accompagnement__desc {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    line-height: 1.65;
+    /* Texte limité pour lisibilité même sur très grand écran */
+    max-width: 560px;
+  }
+
+  .divider { height: 1px; background: #dde8f0; margin: 36px 0; }
+
+  /* ============================================================
+     RESPONSIVE COMPLÉMENTAIRE
+     (Les règles de grille sont dans les blocs .grid-* au-dessus)
+     ============================================================ */
+
+  @media (max-width: 1024px) {
+    .featured-layout { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .formations-hero { padding: 48px var(--side-pad) 36px; }
+    .formations-body { padding: 28px var(--side-pad) 40px; }
+    .hero-stats { gap: 16px; }
+    .stat-sep   { display: none; }
+    .featured-layout { grid-template-columns: 1fr; }
+    .cta-accompagnement { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+    .btn-cca, .btn-ghost { width: 100%; text-align: center; }
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="formations-page">
+
+  <!-- ============================================================
+       HERO — pleine largeur
+       ============================================================ -->
+  <div class="formations-hero">
+    <div class="hero-inner">
+      <div class="hero-tag">NOS FORMATIONS</div>
+      <h1 class="hero-title">
+        Apprends. Pratique.<br>
+        <span>Progresse à ton rythme.</span>
+      </h1>
+      <p class="hero-sub">
+        Formations gratuites et premium en WINDEV, Algorithmes, POO, Bases de données et IA. Avec accompagnement humain à chaque étape.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">20<span>+</span></div>
+          <div class="stat-lbl">Formations</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <div class="stat-num">5<span> domaines</span></div>
+          <div class="stat-lbl">Phares</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <div class="stat-num">Gratuit<span>+</span></div>
+          <div class="stat-lbl">Accès libre</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <div class="stat-num">Suivi<span> 1:1</span></div>
+          <div class="stat-lbl">Disponible</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CORPS DE PAGE — pleine largeur
+       ============================================================ -->
+  <div class="formations-body">
+
+    <!-- FILTRES -->
+    <div class="filters">
+      <span class="filter-label">Filtrer :</span>
+      <button class="filter-btn active">Tout voir</button>
+      <button class="filter-btn inactive">WINDEV</button>
+      <button class="filter-btn inactive">Algorithmes</button>
+      <button class="filter-btn inactive">POO</button>
+      <button class="filter-btn inactive">Bases de données</button>
+      <button class="filter-btn inactive">IA &amp; Accélération</button>
+      <button class="filter-btn free">Gratuit</button>
+    </div>
+
+    <!-- ============================================================
+         FORMATIONS PHARES
+         ============================================================ -->
+    <div class="section-label">FORMATIONS PHARES</div>
+    <div class="section-title">Les incontournables</div>
+
+    <div class="grid-formations">
+
+      <!-- WINDEV -->
+      <div class="formation-card">
+        <div class="card-accent-bar" style="background:var(--accent);"></div>
+        <div class="card-body">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+            <div class="card-icon" style="background:var(--primary);">
+              <span style="font-family:monospace;font-weight:900;font-size:18px;color:var(--accent);">W</span>
+            </div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;">
+              <span class="badge-cca badge-premium">PREMIUM</span>
+              <span class="badge-cca badge-free">GRATUIT</span>
+            </div>
+          </div>
+          <div class="card-title">Maîtriser WINDEV de A à Z</div>
+          <div class="card-desc">De l'interface graphique aux bases de données HyperFileSQL, en passant par le WLangage et les états imprimés. Le parcours complet pour devenir développeur WINDEV.</div>
+          <div class="tags">
+            <span class="badge-cca badge-domain">WLangage</span>
+            <span class="badge-cca badge-domain">Fenêtres</span>
+            <span class="badge-cca badge-domain">États</span>
+            <span class="badge-cca badge-domain">HyperFileSQL</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="meta-info">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            8 modules
+          </div>
+          <a href="" class="btn-cca btn-teal">Voir le cours ↗</a>
+        </div>
+      </div>
+
+      <!-- ALGORITHMES -->
+      <div class="formation-card">
+        <div class="card-accent-bar" style="background:var(--primary);"></div>
+        <div class="card-body">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+            <div class="card-icon" style="background:#F0F4F8;">
+              <span style="font-family:monospace;font-weight:900;font-size:14px;color:var(--primary);">Algo</span>
+            </div>
+            <span class="badge-cca badge-free">GRATUIT</span>
+          </div>
+          <div class="card-title">Algorithmes — Penser avant de coder</div>
+          <div class="card-desc">Tris, recherches, récursivité, graphes et complexité algorithmique. La base indispensable pour tout développeur sérieux, expliquée pas à pas.</div>
+          <div class="tags">
+            <span class="badge-cca badge-domain">Tri</span>
+            <span class="badge-cca badge-domain">Récursivité</span>
+            <span class="badge-cca badge-domain">Graphes</span>
+            <span class="badge-cca badge-domain">Big O</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="meta-info">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            6 modules
+          </div>
+          <a href="" class="btn-cca btn-navy">Voir le cours ↗</a>
+        </div>
+      </div>
+
+      <!-- POO -->
+      <div class="formation-card">
+        <div class="card-accent-bar" style="background:var(--accent);"></div>
+        <div class="card-body">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+            <div class="card-icon" style="background:var(--primary);">
+              <span style="font-family:monospace;font-weight:900;font-size:16px;color:var(--accent);">POO</span>
+            </div>
+            <div style="display:flex;gap:5px;">
+              <span class="badge-cca badge-premium">PREMIUM</span>
+              <span class="badge-cca badge-free">GRATUIT</span>
+            </div>
+          </div>
+          <div class="card-title">Programmation Orientée Objet</div>
+          <div class="card-desc">Classes, objets, héritage, polymorphisme et principes SOLID. Comprendre la POO en profondeur pour écrire un code maintenable et professionnel.</div>
+          <div class="tags">
+            <span class="badge-cca badge-domain">Classes</span>
+            <span class="badge-cca badge-domain">Héritage</span>
+            <span class="badge-cca badge-domain">SOLID</span>
+            <span class="badge-cca badge-domain">Design patterns</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="meta-info">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            7 modules
+          </div>
+          <a href="" class="btn-cca btn-teal">Voir le cours ↗</a>
+        </div>
+      </div>
+
+      <!-- BDD -->
+      <div class="formation-card">
+        <div class="card-accent-bar" style="background:var(--primary);"></div>
+        <div class="card-body">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+            <div class="card-icon" style="background:#F0F4F8;">
+              <span style="font-family:monospace;font-weight:900;font-size:16px;color:var(--primary);">BDD</span>
+            </div>
+            <span class="badge-cca badge-free">GRATUIT</span>
+          </div>
+          <div class="card-title">Bases de données — De la théorie à la pratique</div>
+          <div class="card-desc">Modélisation Merise, SQL avancé, normalisation, procédures stockées et optimisation. La colonne vertébrale de toute application sérieuse.</div>
+          <div class="tags">
+            <span class="badge-cca badge-domain">SQL</span>
+            <span class="badge-cca badge-domain">MCD/MLD</span>
+            <span class="badge-cca badge-domain">MySQL</span>
+            <span class="badge-cca badge-domain">Merise</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="meta-info">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            5 modules
+          </div>
+          <a href="" class="btn-cca btn-navy">Voir le cours ↗</a>
+        </div>
+      </div>
+
+      <!-- IA ACCÉLÉRATEUR — pleine largeur grâce à grid-column: 1 / -1 -->
+      <div class="featured-card">
+        <div class="featured-inner">
+          <div class="featured-layout">
+
+            <!-- Texte + tags -->
+            <div>
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
+                <div style="width:52px;height:52px;border-radius:8px;background:rgba(0,201,167,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.8" stroke-linecap="round"><path d="M12 2a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M12 16a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2v-2a2 2 0 012-2z"/><path d="M2 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2H4a2 2 0 01-2-2z"/><path d="M16 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2h-2a2 2 0 01-2-2z"/><path d="M5.64 5.64l1.41 1.41M16.95 16.95l1.41 1.41M5.64 18.36l1.41-1.41M16.95 7.05l1.41-1.41"/></svg>
+                </div>
+                <div>
+                  <span class="badge-cca badge-new">NOUVEAU</span>
+                  <div style="color:#fff;font-size:clamp(16px,2vw,20px);font-weight:900;margin-top:6px;line-height:1.2;">
+                    Utiliser l'IA comme accélérateur d'apprentissage
+                  </div>
+                </div>
+                <span class="badge-cca badge-free" style="margin-left:auto;">GRATUIT</span>
+              </div>
+
+              <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.75;max-width:720px;margin-bottom:18px;">
+                Apprends à utiliser ChatGPT, GitHub Copilot et d'autres outils IA pour coder plus vite, déboguer efficacement et comprendre des concepts complexes. L'IA ne remplace pas le développeur — elle le décuple.
+              </p>
+
+              <div class="featured-tags">
+                <span>Prompting</span>
+                <span>GitHub Copilot</span>
+                <span>ChatGPT</span>
+                <span>Auto-débogage</span>
+                <span>Génération de code</span>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:14px;">
+                <a href="" class="btn-cca btn-teal" style="padding:11px 26px;font-size:13px;">
+                  Commencer gratuitement ↗
+                </a>
+                <span style="color:rgba(255,255,255,0.35);font-size:11px;display:flex;align-items:center;gap:5px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                  4 modules
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /grid-formations -->
+
+    <!-- ============================================================
+         EBOOKS
+         ============================================================ -->
+    <div class="divider"></div>
+    <div class="section-label">RESSOURCES COMPLÉMENTAIRES</div>
+    <div class="section-title">Ebooks disponibles</div>
+
+    <div class="grid-ebooks">
+
+      <div class="ebook-card">
+        <div class="ebook-cover">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">
+            <div class="ebook-title">Les 50 algorithmes à connaître</div>
+            <span class="badge-cca badge-free" style="flex-shrink:0;">GRATUIT</span>
+          </div>
+          <div class="ebook-meta">PDF · 84 pages</div>
+          <a href="#" class="btn-cca btn-navy" style="margin-top:10px;font-size:11px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger
+          </a>
+        </div>
+      </div>
+
+      <div class="ebook-card">
+        <div class="ebook-cover">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">
+            <div class="ebook-title">Débuter avec WINDEV — Guide complet</div>
+            <span class="badge-cca badge-premium" style="flex-shrink:0;">PREMIUM</span>
+          </div>
+          <div class="ebook-meta">PDF · 120 pages</div>
+          <a href="#" class="btn-cca btn-teal" style="margin-top:10px;font-size:11px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Obtenir
+          </a>
+        </div>
+      </div>
+
+      <div class="ebook-card">
+        <div class="ebook-cover">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">
+            <div class="ebook-title">Prompter l'IA pour mieux coder</div>
+            <span class="badge-cca badge-free" style="flex-shrink:0;">GRATUIT</span>
+          </div>
+          <div class="ebook-meta">PDF · 56 pages</div>
+          <a href="#" class="btn-cca btn-navy" style="margin-top:10px;font-size:11px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <!-- /grid-ebooks -->
+
+    <!-- ============================================================
+         CTA ACCOMPAGNEMENT
+         ============================================================ -->
+    <div class="divider"></div>
+    <div class="cta-accompagnement">
+      <div>
+        <div class="cta-accompagnement__label">ACCOMPAGNEMENT PERSONNALISÉ</div>
+        <div class="cta-accompagnement__title">Tu n'apprendras pas seul.</div>
+        <div class="cta-accompagnement__desc">
+          Sessions de mentorat 1:1, révision de code, plan d'apprentissage sur-mesure et accès à la communauté privée d'apprenants actifs.
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;">
+        <a href="" class="btn-cca btn-teal" style="padding:12px 26px;font-size:13px;">Découvrir ↗</a>
+        <a href="{% url 'contact' %}" class="btn-ghost">En savoir plus</a>
+      </div>
+    </div>
+
+  </div>
+  <!-- /formations-body -->
+
+</div>
+<!-- /formations-page -->
+{% endblock %}

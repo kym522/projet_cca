@@ -1,0 +1,616 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}À propos | Challenge Code Academy{% endblock %}
+
+
+{% block extra_css %}
+<style>
+
+  /* ============================================================
+     VARIABLES — centralisées ici, pas à redéfinir ailleurs
+     ============================================================ */
+  :root {
+    --primary:      #0A2540;
+    --primary-dark: #0D1B2E;
+    --accent:       #00C9A7;
+    --accent-muted: rgba(0, 201, 167, 0.15);
+    --accent-border:rgba(0, 201, 167, 0.25);
+    --light:        #F4F7FB;
+    --text-muted:   rgba(255, 255, 255, 0.6);
+    --text-dark:    #334155;
+  }
+
+  /* ============================================================
+     BASE PAGE
+     CORRECTION 2 : body { background/color } supprimé d'ici.
+     Ces règles appartiennent à base.html pour éviter les
+     conflits de cascades entre templates.
+     ============================================================ */
+
+  /* ============================================================
+     UTILITAIRES
+     ============================================================ */
+  .section-badge {
+    display: inline-block;
+    background: var(--accent-muted);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .section-badge--dark {
+    background: rgba(0, 201, 167, 0.12);
+    color: var(--primary);
+  }
+
+  .divider {
+    width: 48px;
+    height: 3px;
+    background: var(--accent);
+    margin: 14px auto 0;
+    border-radius: 2px;
+  }
+
+  .center-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ============================================================
+     HERO — section principale "À propos"
+     ============================================================ */
+  .about-hero {
+    background: var(--primary);
+    padding: 80px 24px 64px;
+  }
+
+  .about-hero__heading {
+    color: #fff;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .about-hero__heading span {
+    color: var(--accent);
+  }
+
+  /* ============================================================
+     ABOUT BOX — zone texte + logo
+     ============================================================ */
+  .about-box {
+    background: var(--light);
+    border-radius: 14px;
+    padding: 44px;
+    margin-top: 32px;
+    /* CORRECTION 3 : couleur du texte explicite, plus fiable
+       que d'hériter d'un body color:#fff */
+    color: var(--text-dark);
+  }
+
+  .about-box__text p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #445;
+    margin-bottom: 14px;
+  }
+
+  .about-box__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ============================================================
+     LOGO BOX
+     CORRECTION 4 : height:100% retiré — causait des débordements
+     quand le parent n'a pas de hauteur définie explicitement.
+     Remplacé par min-height pour garantir l'alignement.
+     ============================================================ */
+  .logo-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 32px;
+    border: 1px solid var(--accent-border);
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-big svg {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logo-big .text-main {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 1px;
+  }
+
+  .logo-big .text-code {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent);
+    font-family: monospace;
+    line-height: 1.1;
+  }
+
+  .logo-big .text-sub {
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ============================================================
+     STATS BAND
+     ============================================================ */
+  .stats-band {
+    background: var(--primary-dark);
+    border-top: 1px solid var(--accent-border);
+    border-bottom: 1px solid var(--accent-border);
+    padding: 32px 24px;
+  }
+
+  .stats-band__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    text-align: center;
+  }
+
+  .stat-item__number {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-item__label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     VALEURS — section cartes
+     ============================================================ */
+  .values-section {
+    background: var(--primary);
+    padding: 72px 24px;
+  }
+
+  .values-section__heading {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  /* CORRECTION 5 : .card retiré de .card-custom pour éviter le
+     conflit avec Bootstrap .card qui imposait background:#fff,
+     border-radius, etc. et écrasait nos styles personnalisés. */
+  .card-custom {
+    background: var(--primary-dark);
+    border: 1px solid var(--accent-border);
+    border-radius: 12px;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card-custom:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 32px rgba(0, 201, 167, 0.15);
+  }
+
+  .card-custom__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--accent-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .card-custom h5 {
+    color: var(--accent);
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .card-custom p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* ============================================================
+     FONDATEUR — section bio
+     ============================================================ */
+  .founder-section {
+    background: var(--light);
+    padding: 72px 24px;
+  }
+
+  .founder-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 40px;
+    border: 1px solid #dde8f0;
+    display: flex;
+    gap: 36px;
+    align-items: flex-start;
+  }
+
+  .founder-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .founder-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+
+  .founder-role {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .founder-bio {
+    font-size: 13px;
+    line-height: 1.75;
+    color: #445;
+    margin: 0;
+  }
+
+  /* ============================================================
+     CTA FINAL
+     ============================================================ */
+  .cta-section {
+    background: var(--primary-dark);
+    padding: 64px 24px;
+    text-align: center;
+    border-top: 1px solid var(--accent-border);
+  }
+
+  .cta-section__title {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  .cta-section__desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto 28px;
+  }
+
+  .btn-accent {
+    background: var(--accent);
+    color: var(--primary);
+    border: none;
+    padding: 14px 36px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s;
+  }
+
+  .btn-accent:hover {
+    opacity: 0.88;
+    color: var(--primary);
+  }
+
+  .btn-outline-accent {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    padding: 13px 32px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s;
+  }
+
+  .btn-outline-accent:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px) {
+    .about-box {
+      padding: 28px 24px;
+    }
+
+    .stats-band__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .founder-card {
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .about-hero {
+      padding: 56px 16px 48px;
+    }
+
+    .about-hero__heading {
+      font-size: 26px;
+    }
+
+    .about-box {
+      padding: 24px 16px;
+    }
+
+    .logo-box {
+      min-height: auto;
+      padding: 28px 16px;
+    }
+
+    .stats-band__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .values-section,
+    .founder-section,
+    .cta-section {
+      padding: 48px 16px;
+    }
+
+    .cta-section__title {
+      font-size: 22px;
+    }
+
+    .btn-accent,
+    .btn-outline-accent {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ============================================================
+     SECTION 1 — HERO À PROPOS
+     ============================================================ -->
+<section class="about-hero">
+  <div class="container center-wrapper text-center">
+
+    <div class="section-badge">À PROPOS</div>
+    <h1 class="about-hero__heading">
+      Challenge <span>Code</span> Academy
+    </h1>
+    <div class="divider"></div>
+
+    <!-- BOX : texte + logo -->
+    <div class="about-box mt-4">
+      <div class="row align-items-center g-4">
+
+        <!-- TEXTE -->
+        <div class="col-md-7 text-start about-box__text">
+          <p>
+            Challenge Code Academy est une plateforme créée pour aider les apprenants à réussir en programmation grâce à une méthode pratique et accessible. Fondée il y a 4 ans par <strong>Armel Tanguy Yedonou</strong> et son équipe, elle repose sur une approche simple : apprendre, pratiquer et coder efficacement.
+          </p>
+          <p>
+            Aujourd'hui, la plateforme rassemble une large communauté de plusieurs milliers d'abonnés engagés. Sa mission est de rendre le développement logiciel accessible à tous, du débutant au niveau intermédiaire.
+          </p>
+          <p>
+            L'apprentissage repose sur des challenges concrets qui permettent de développer de vraies compétences et une pensée de développeur.
+          </p>
+          <p>
+            En complément, la plateforme propose des ressources variées : ebooks, kits pratiques et newsletter hebdomadaire.
+          </p>
+        </div>
+
+        <!-- LOGO -->
+        <div class="col-md-5">
+          <div class="logo-box">
+            <div class="logo-big text-center">
+
+              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 8 L3 50 L18 92"  stroke="#0A2540" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M82 8 L97 50 L82 92"  stroke="#0A2540" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M32 30 L54 50 L32 70" stroke="#00C9A7" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+
+              <div class="mt-3">
+                <div class="text-main">CHALLENGE</div>
+                <div class="text-code">Code</div>
+                <div class="text-sub">ACADEMY</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2 — STATS CHIFFRES CLÉS
+     ============================================================ -->
+<div class="stats-band">
+  <div class="container center-wrapper">
+    <div class="stats-band__grid">
+
+      <div class="stat-item">
+        <div class="stat-item__number">4+</div>
+        <div class="stat-item__label">Années d'existence</div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-item__number">5</div>
+        <div class="stat-item__label">Domaines couverts</div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-item__number">1:1</div>
+        <div class="stat-item__label">Suivi personnalisé</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 3 — VALEURS
+     CORRECTION 6 : class="card card-custom" → class="card-custom"
+     Bootstrap .card imposait background:#fff et écrasait nos styles
+     ============================================================ -->
+<section class="values-section text-center">
+  <div class="container center-wrapper">
+
+    <div class="section-badge">MISSION & VALEURS</div>
+    <h2 class="values-section__heading">Ce en quoi nous croyons</h2>
+    <div class="divider"></div>
+
+    <div class="row g-4 mt-4">
+
+      <div class="col-md-4">
+        <div class="card-custom p-4 h-100">
+          <div class="card-custom__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <h5>Excellence</h5>
+          <p>Révéler les talents par la rigueur et la qualité des contenus pédagogiques.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card-custom p-4 h-100">
+          <div class="card-custom__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round">
+              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
+          <h5>Innovation</h5>
+          <p>Soutenir les projets créatifs et disruptifs grâce à des méthodes d'apprentissage modernes.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card-custom p-4 h-100">
+          <div class="card-custom__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </div>
+          <h5>Connexion</h5>
+          <p>Lier l'Afrique et la diaspora autour du code, de l'entrepreneuriat et de la solidarité.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4 — FONDATEUR
+     Nouvelle section ajoutée pour mieux structurer la page
+     ============================================================ -->
+<section class="founder-section">
+  <div class="container center-wrapper">
+
+    <div class="text-center mb-4">
+      <div class="section-badge section-badge--dark">LE FONDATEUR</div>
+      <h2 style="color:#0A2540;font-size:28px;font-weight:900;">Derrière la plateforme</h2>
+      <div class="divider"></div>
+    </div>
+
+    <div class="founder-card">
+      <div class="founder-avatar">A</div>
+      <div>
+        <div class="founder-name">Armel Tanguy Yedonou</div>
+        <div class="founder-role">Fondateur & Formateur principal</div>
+        <p class="founder-bio">
+          Développeur passionné et formateur engagé, Armel Tanguy Yedonou a fondé Challenge Code Academy avec une conviction forte : <strong>tout le monde peut apprendre à coder</strong>, à condition d'avoir les bonnes ressources et un accompagnement humain. Depuis 4 ans, il construit une communauté d'apprenants actifs, leur transmet des compétences concrètes et les accompagne dans leurs projets professionnels.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5 — CTA FINAL
+     ============================================================ -->
+<section class="cta-section">
+  <div class="container center-wrapper">
+
+    <div class="section-badge">REJOINS-NOUS</div>
+    <h2 class="cta-section__title">Prêt à relever le challenge ?</h2>
+    <p class="cta-section__desc">
+      Rejoins des milliers d'apprenants qui progressent chaque jour sur Challenge Code Academy. Formations gratuites disponibles dès maintenant.
+    </p>
+
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="" class="btn-accent">Explorer les formations ↗</a>
+      <a href="{% url 'contact' %}"   class="btn-outline-accent">Nous contacter</a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
