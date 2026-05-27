@@ -1,0 +1,1073 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ebooks | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  /* ============================================================
+     VARIABLES — design system CCA
+     ============================================================ */
+  :root {
+    --primary:       #0A2540;
+    --primary-dark:  #0D1B2E;
+    --accent:        #00C9A7;
+    --accent-muted:  rgba(0, 201, 167, 0.15);
+    --accent-border: rgba(0, 201, 167, 0.25);
+    --light:         #F4F7FB;
+    --text-muted:    rgba(255, 255, 255, 0.55);
+    --text-dark:     #334155;
+    --card-border:   #e0e8f0;
+    --side-pad: clamp(16px, 4vw, 56px);
+  }
+
+  /* ============================================================
+     RESET BOOTSTRAP CONTAINER
+     ============================================================ */
+  .ebooks-page .container,
+  .ebooks-page .container-fluid,
+  .ebooks-page .container-lg,
+  .ebooks-page .container-xl {
+    max-width: 100% !important;
+    padding-left: 0  !important;
+    padding-right: 0 !important;
+  }
+
+  /* ============================================================
+     PAGE WRAPPER
+     ============================================================ */
+  .ebooks-page {
+    background: var(--light);
+    width: 100%;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .ebooks-hero {
+    background: var(--primary);
+    padding: 72px var(--side-pad) 56px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid var(--accent);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ebooks-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.05);
+    pointer-events: none;
+  }
+
+  .ebooks-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 30%;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.04);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    color: #fff;
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .hero-title span { color: var(--accent); }
+
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 680px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .stat-item { display: flex; flex-direction: column; gap: 3px; }
+
+  .stat-num {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .stat-num span { color: var(--accent); }
+
+  .stat-lbl {
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .stat-sep {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  /* ============================================================
+     BODY
+     ============================================================ */
+  .ebooks-body {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 40px var(--side-pad) 56px;
+  }
+
+  /* ============================================================
+     FILTRES
+     ============================================================ */
+  .filters {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 36px;
+    gap: 6px;
+    box-sizing: border-box;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #889;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-right: 14px;
+    border-right: 1px solid var(--card-border);
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  .filters .filter-btn {
+    flex: 1;
+    text-align: center;
+    padding: 9px 6px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    background: none;
+    white-space: nowrap;
+  }
+
+  .filter-btn.active   { background: var(--primary); color: var(--accent); border-color: var(--primary); }
+  .filter-btn.inactive { background: transparent; color: #667; border-color: transparent; }
+  .filter-btn.inactive:hover { background: var(--light); border-color: var(--card-border); color: var(--primary); }
+  .filter-btn.free     { border-color: var(--accent); color: var(--accent); background: transparent; }
+  .filter-btn.free:hover,
+  .filter-btn.free.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .filters { flex-wrap: wrap; }
+    .filter-label { width: 100%; border-right: none; padding-right: 0; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; margin-bottom: 2px; }
+    .filters .filter-btn { flex: 1 1 calc(33% - 6px); }
+  }
+
+  @media (max-width: 500px) {
+    .filters .filter-btn { flex: 1 1 calc(50% - 6px); }
+  }
+
+  /* ============================================================
+     LABELS DE SECTION
+     ============================================================ */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .section-title {
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 22px;
+  }
+
+  /* ============================================================
+     GRILLE EBOOKS PRINCIPALE — cartes grandes
+     ============================================================ */
+  .grid-ebooks-main {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  @media (max-width: 1024px) {
+    .grid-ebooks-main { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .grid-ebooks-main { grid-template-columns: 1fr; }
+  }
+
+  /* ============================================================
+     CARTE EBOOK GRANDE
+     ============================================================ */
+  .ebook-card-main {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ebook-card-main:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(10, 37, 64, 0.10);
+  }
+
+  /* Couverture visuelle en haut de la carte */
+  .ebook-cover-block {
+    background: var(--primary);
+    padding: 28px 24px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ebook-cover-block::after {
+    content: '';
+    position: absolute;
+    right: -20px; bottom: -20px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(0,201,167,0.07);
+    pointer-events: none;
+  }
+
+  /* Livre miniature */
+  .ebook-book {
+    width: 54px;
+    min-width: 54px;
+    height: 72px;
+    border-radius: 3px 6px 6px 3px;
+    background: #fff;
+    border-left: 6px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    box-shadow: 2px 3px 10px rgba(0,0,0,0.25);
+  }
+
+  .ebook-book svg { opacity: 0.85; }
+
+  .ebook-cover-meta { position: relative; z-index: 1; }
+
+  .ebook-cover-meta .pages {
+    color: rgba(255,255,255,0.45);
+    font-size: 11px;
+    margin-top: 4px;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .ebook-body {
+    padding: 20px 22px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ebook-title-main {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .ebook-desc {
+    color: #667;
+    font-size: 12px;
+    line-height: 1.7;
+    margin-bottom: 14px;
+    flex: 1;
+  }
+
+  .ebook-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 16px; }
+
+  .ebook-footer {
+    padding: 14px 22px;
+    border-top: 1px solid #f0f4f8;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  /* ============================================================
+     CARTE EBOOK FEATURED (pleine largeur)
+     ============================================================ */
+  .ebook-featured {
+    background: var(--primary);
+    border-radius: 10px;
+    padding: 32px 36px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    grid-column: 1 / -1;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 6px solid var(--accent);
+    margin-bottom: 0;
+  }
+
+  .ebook-featured:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(0,201,167,0.15);
+  }
+
+  .ebook-featured::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(0,201,167,0.05);
+    pointer-events: none;
+  }
+
+  .ebook-featured-inner { position: relative; z-index: 1; }
+
+  .ebook-featured-cover {
+    width: 90px;
+    height: 120px;
+    border-radius: 4px 8px 8px 4px;
+    background: rgba(255,255,255,0.07);
+    border-left: 8px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 4px 6px 20px rgba(0,0,0,0.3);
+  }
+
+  @media (max-width: 900px) {
+    .ebook-featured { grid-template-columns: 1fr; gap: 24px; }
+    .ebook-featured-cover { width: 70px; height: 92px; }
+  }
+
+  /* ============================================================
+     GRILLE EBOOKS SECONDAIRE (liste compacte)
+     ============================================================ */
+  .grid-ebooks-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  @media (max-width: 700px) {
+    .grid-ebooks-list { grid-template-columns: 1fr; }
+  }
+
+  .ebook-list-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ebook-list-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(10,37,64,0.08);
+  }
+
+  .ebook-mini-cover {
+    width: 40px;
+    min-width: 40px;
+    height: 54px;
+    border-radius: 2px 5px 5px 2px;
+    background: var(--primary);
+    border-left: 5px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 1px 2px 6px rgba(0,0,0,0.18);
+  }
+
+  .ebook-list-title { color: var(--primary); font-size: 13px; font-weight: 700; margin-bottom: 3px; line-height: 1.4; }
+  .ebook-list-meta  { color: #889; font-size: 11px; margin-bottom: 8px; }
+
+  /* ============================================================
+     BADGES
+     ============================================================ */
+  .badge-cca {
+    display: inline-block;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .badge-free    { background: rgba(0,201,167,0.12); color: #008870; }
+  .badge-premium { background: var(--primary); color: var(--accent); }
+  .badge-new     { background: var(--accent); color: var(--primary); }
+  .badge-domain  { background: #F0F4F8; color: #445; }
+  .badge-coming  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.45); }
+
+  /* ============================================================
+     BOUTONS
+     ============================================================ */
+  .btn-cca {
+    padding: 7px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-cca:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-teal  { background: var(--accent); color: var(--primary); }
+  .btn-navy  { background: var(--primary); color: #fff; }
+  .btn-ghost {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    padding: 10px 18px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-disabled {
+    background: #e0e8f0;
+    color: #aab;
+    cursor: not-allowed;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 5px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ============================================================
+     NEWSLETTER / CTA EBOOK GRATUIT
+     ============================================================ */
+  .cta-newsletter {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-top: 4px solid var(--accent);
+  }
+
+  .cta-newsletter__label {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .cta-newsletter__title {
+    color: var(--primary);
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+
+  .cta-newsletter__desc {
+    color: #667;
+    font-size: 13px;
+    line-height: 1.65;
+    max-width: 500px;
+  }
+
+  .newsletter-form {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  .newsletter-form input[type="email"] {
+    padding: 10px 14px;
+    border: 1.5px solid var(--card-border);
+    border-radius: 5px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    width: 220px;
+    color: var(--primary);
+    transition: border-color 0.15s;
+  }
+
+  .newsletter-form input[type="email"]:focus {
+    border-color: var(--accent);
+  }
+
+  .newsletter-form input[type="email"]::placeholder {
+    color: #aab;
+  }
+
+  @media (max-width: 600px) {
+    .newsletter-form { width: 100%; }
+    .newsletter-form input[type="email"] { width: 100%; }
+    .newsletter-form .btn-cca { width: 100%; justify-content: center; }
+    .cta-newsletter { flex-direction: column; align-items: flex-start; padding: 22px 18px; }
+  }
+
+  /* ============================================================
+     CTA ACCOMPAGNEMENT
+     ============================================================ */
+  .cta-accompagnement {
+    background: var(--primary);
+    border-radius: 10px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-left: 6px solid var(--accent);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cta-accompagnement__label {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .cta-accompagnement__title {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .cta-accompagnement__desc {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    line-height: 1.65;
+    max-width: 560px;
+  }
+
+  .divider { height: 1px; background: #dde8f0; margin: 36px 0; }
+
+  /* ============================================================
+     RESPONSIVE COMPLÉMENTAIRE
+     ============================================================ */
+  @media (max-width: 600px) {
+    .ebooks-hero { padding: 48px var(--side-pad) 36px; }
+    .ebooks-body { padding: 28px var(--side-pad) 40px; }
+    .hero-stats { gap: 16px; }
+    .stat-sep   { display: none; }
+    .cta-accompagnement { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+    .btn-cca, .btn-ghost { width: 100%; text-align: center; justify-content: center; }
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="ebooks-page">
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <div class="ebooks-hero">
+    <div class="hero-inner">
+      <div class="hero-tag">NOS EBOOKS</div>
+      <h1 class="hero-title">
+        Des ressources claires.<br>
+        <span>Téléchargeables. Immédiatement utiles.</span>
+      </h1>
+      <p class="hero-sub">
+        Guides pratiques, références techniques et synthèses d'expert en WINDEV, Algorithmes, POO, Bases de données et IA. Formats PDF optimisés pour l'apprentissage.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">12<span>+</span></div>
+          <div class="stat-lbl">Ebooks</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <div class="stat-num">5<span> sujets</span></div>
+          <div class="stat-lbl">Couverts</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <div class="stat-num">Gratuit<span>+</span></div>
+          <div class="stat-lbl">Accès libre</div>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <div class="stat-num">PDF<span> HD</span></div>
+          <div class="stat-lbl">Téléchargement</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CORPS DE PAGE
+       ============================================================ -->
+  <div class="ebooks-body">
+
+    <!-- FILTRES -->
+    <div class="filters">
+      <span class="filter-label">Filtrer :</span>
+      <button class="filter-btn active">Tout voir</button>
+      <button class="filter-btn inactive">WINDEV</button>
+      <button class="filter-btn inactive">Algorithmes</button>
+      <button class="filter-btn inactive">POO</button>
+      <button class="filter-btn inactive">Bases de données</button>
+      <button class="filter-btn inactive">IA</button>
+      <button class="filter-btn free">Gratuit</button>
+    </div>
+
+    <!-- ============================================================
+         EBOOKS EN VEDETTE
+         ============================================================ -->
+    <div class="section-label">EBOOKS EN VEDETTE</div>
+    <div class="section-title">Les plus téléchargés</div>
+
+    <div class="grid-ebooks-main">
+
+      <!-- EBOOK 1 — Algorithmes GRATUIT -->
+      <div class="ebook-card-main">
+        <div class="ebook-cover-block">
+          <div class="ebook-book">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="2" stroke-linecap="round">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            </svg>
+          </div>
+          <div class="ebook-cover-meta">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="badge-cca badge-free">GRATUIT</span>
+            </div>
+            <div style="color:#fff;font-size:13px;font-weight:900;line-height:1.3;">Les 50 algorithmes à connaître</div>
+            <div class="pages">PDF · 84 pages · Challenge CCA</div>
+          </div>
+        </div>
+        <div class="ebook-body">
+          <div class="ebook-desc">
+            Les algorithmes fondamentaux que tout développeur doit maîtriser : tris, recherches, graphes, récursivité. Avec pseudocode et exemples concrets pour chaque algorithme.
+          </div>
+          <div class="ebook-tags">
+            <span class="badge-cca badge-domain">Tri</span>
+            <span class="badge-cca badge-domain">Recherche</span>
+            <span class="badge-cca badge-domain">Graphes</span>
+            <span class="badge-cca badge-domain">Big O</span>
+          </div>
+        </div>
+        <div class="ebook-footer">
+          <div style="display:flex;align-items:center;gap:5px;color:#889;font-size:11px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            2 400 téléchargements
+          </div>
+          <a href="#" class="btn-cca btn-navy">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger
+          </a>
+        </div>
+      </div>
+
+      <!-- EBOOK 2 — WINDEV PREMIUM -->
+      <div class="ebook-card-main">
+        <div class="ebook-cover-block">
+          <div class="ebook-book">
+            <span style="font-family:monospace;font-weight:900;font-size:13px;color:#0A2540;">W</span>
+          </div>
+          <div class="ebook-cover-meta">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="badge-cca badge-premium">PREMIUM</span>
+            </div>
+            <div style="color:#fff;font-size:13px;font-weight:900;line-height:1.3;">Débuter avec WINDEV — Guide complet</div>
+            <div class="pages">PDF · 120 pages · Challenge CCA</div>
+          </div>
+        </div>
+        <div class="ebook-body">
+          <div class="ebook-desc">
+            Installation, premiers projets, WLangage, fenêtres, états et connexion à une base de données HyperFileSQL. Tout pour démarrer WINDEV sans se perdre.
+          </div>
+          <div class="ebook-tags">
+            <span class="badge-cca badge-domain">WLangage</span>
+            <span class="badge-cca badge-domain">Fenêtres</span>
+            <span class="badge-cca badge-domain">HyperFileSQL</span>
+            <span class="badge-cca badge-domain">États</span>
+          </div>
+        </div>
+        <div class="ebook-footer">
+          <div style="color:#889;font-size:11px;font-family:monospace;">Accès premium requis</div>
+          <a href="#" class="btn-cca btn-teal">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Obtenir
+          </a>
+        </div>
+      </div>
+
+      <!-- EBOOK 3 — IA GRATUIT NOUVEAU -->
+      <div class="ebook-card-main">
+        <div class="ebook-cover-block">
+          <div class="ebook-book">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="1.8" stroke-linecap="round">
+              <path d="M12 2a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2V4a2 2 0 012-2z"/>
+              <path d="M12 16a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2v-2a2 2 0 012-2z"/>
+              <path d="M2 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2H4a2 2 0 01-2-2z"/>
+              <path d="M16 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div class="ebook-cover-meta">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="badge-cca badge-new">NOUVEAU</span>
+              <span class="badge-cca badge-free">GRATUIT</span>
+            </div>
+            <div style="color:#fff;font-size:13px;font-weight:900;line-height:1.3;">Prompter l'IA pour mieux coder</div>
+            <div class="pages">PDF · 56 pages · Challenge CCA</div>
+          </div>
+        </div>
+        <div class="ebook-body">
+          <div class="ebook-desc">
+            Techniques de prompting avancées pour ChatGPT, GitHub Copilot et Claude. Déboguer, générer, refactoriser et documenter du code grâce à l'IA — avec des exemples réels.
+          </div>
+          <div class="ebook-tags">
+            <span class="badge-cca badge-domain">Prompting</span>
+            <span class="badge-cca badge-domain">ChatGPT</span>
+            <span class="badge-cca badge-domain">Copilot</span>
+            <span class="badge-cca badge-domain">Débogage IA</span>
+          </div>
+        </div>
+        <div class="ebook-footer">
+          <div style="display:flex;align-items:center;gap:5px;color:#889;font-size:11px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            980 téléchargements
+          </div>
+          <a href="#" class="btn-cca btn-navy">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <!-- /grid-ebooks-main -->
+
+    <!-- EBOOK FEATURED — pleine largeur -->
+    <div style="margin-top:22px;">
+      <div class="ebook-featured">
+        <!-- Couverture livre grand format -->
+        <div class="ebook-featured-inner">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
+            <span class="badge-cca badge-premium">PREMIUM</span>
+            <span class="badge-cca badge-new">BESTSELLER</span>
+          </div>
+          <div style="color:#fff;font-size:clamp(16px,2vw,22px);font-weight:900;margin-bottom:10px;line-height:1.25;">
+            Le Grand Guide de la POO — Classes, Design Patterns & Architecture
+          </div>
+          <p style="color:rgba(255,255,255,0.55);font-size:13px;line-height:1.75;max-width:660px;margin-bottom:18px;">
+            200 pages de référence sur la Programmation Orientée Objet : classes, héritage, polymorphisme, interfaces, principes SOLID et les 23 Design Patterns du Gang of Four. Des exemples en WLangage, Python et Java.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;">
+            <span style="background:rgba(0,201,167,0.18);color:var(--accent);font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;">Classes & Objets</span>
+            <span style="background:rgba(0,201,167,0.18);color:var(--accent);font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;">Design Patterns</span>
+            <span style="background:rgba(0,201,167,0.18);color:var(--accent);font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;">SOLID</span>
+            <span style="background:rgba(0,201,167,0.18);color:var(--accent);font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;">Architecture</span>
+            <span style="background:rgba(0,201,167,0.18);color:var(--accent);font-family:monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;">WLangage / Python / Java</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+            <a href="#" class="btn-cca btn-teal" style="padding:11px 26px;font-size:13px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Obtenir l'ebook
+            </a>
+            <span style="color:rgba(255,255,255,0.35);font-size:11px;font-family:monospace;">PDF · 200 pages</span>
+          </div>
+        </div>
+
+        <!-- Illustration livre -->
+        <div class="ebook-featured-cover">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="1.5" stroke-linecap="round">
+            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            <line x1="9" y1="7" x2="15" y2="7"/>
+            <line x1="9" y1="10" x2="15" y2="10"/>
+            <line x1="9" y1="13" x2="12" y2="13"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         AUTRES EBOOKS
+         ============================================================ -->
+    <div class="divider"></div>
+    <div class="section-label">BIBLIOTHÈQUE COMPLÈTE</div>
+    <div class="section-title">Tous les guides disponibles</div>
+
+    <div class="grid-ebooks-list">
+
+      <!-- BDD -->
+      <div class="ebook-list-card">
+        <div class="ebook-mini-cover">
+          <span style="font-family:monospace;font-size:9px;font-weight:900;color:var(--accent);text-align:center;line-height:1.2;">BDD</span>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px;">
+            <div class="ebook-list-title">SQL de A à Z — Requêtes & Optimisation</div>
+            <span class="badge-cca badge-free" style="flex-shrink:0;">GRATUIT</span>
+          </div>
+          <div class="ebook-list-meta">PDF · 96 pages</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="badge-cca badge-domain">SQL</span>
+            <span class="badge-cca badge-domain">Index</span>
+            <span class="badge-cca badge-domain">Jointures</span>
+          </div>
+          <a href="#" class="btn-cca btn-navy" style="font-size:11px;padding:5px 12px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger
+          </a>
+        </div>
+      </div>
+
+      <!-- Merise -->
+      <div class="ebook-list-card">
+        <div class="ebook-mini-cover">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 17h3a4 4 0 000-8h-3"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px;">
+            <div class="ebook-list-title">Merise & Modélisation — MCD, MLD, MPD</div>
+            <span class="badge-cca badge-free" style="flex-shrink:0;">GRATUIT</span>
+          </div>
+          <div class="ebook-list-meta">PDF · 68 pages</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="badge-cca badge-domain">MCD</span>
+            <span class="badge-cca badge-domain">MLD</span>
+            <span class="badge-cca badge-domain">Merise</span>
+          </div>
+          <a href="#" class="btn-cca btn-navy" style="font-size:11px;padding:5px 12px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger
+          </a>
+        </div>
+      </div>
+
+      <!-- WLangage avancé PREMIUM -->
+      <div class="ebook-list-card">
+        <div class="ebook-mini-cover">
+          <span style="font-family:monospace;font-size:10px;font-weight:900;color:var(--accent);">W+</span>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px;">
+            <div class="ebook-list-title">WLangage Avancé — Procédures, Tableaux & Fichiers</div>
+            <span class="badge-cca badge-premium" style="flex-shrink:0;">PREMIUM</span>
+          </div>
+          <div class="ebook-list-meta">PDF · 110 pages</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="badge-cca badge-domain">Procédures</span>
+            <span class="badge-cca badge-domain">Classes</span>
+            <span class="badge-cca badge-domain">Fichiers</span>
+          </div>
+          <a href="#" class="btn-cca btn-teal" style="font-size:11px;padding:5px 12px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Obtenir
+          </a>
+        </div>
+      </div>
+
+      <!-- Récursivité -->
+      <div class="ebook-list-card">
+        <div class="ebook-mini-cover">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px;">
+            <div class="ebook-list-title">Récursivité — Comprendre & Maîtriser</div>
+            <span class="badge-cca badge-free" style="flex-shrink:0;">GRATUIT</span>
+          </div>
+          <div class="ebook-list-meta">PDF · 44 pages</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="badge-cca badge-domain">Récursivité</span>
+            <span class="badge-cca badge-domain">Mémoïsation</span>
+          </div>
+          <a href="#" class="btn-cca btn-navy" style="font-size:11px;padding:5px 12px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger
+          </a>
+        </div>
+      </div>
+
+      <!-- WINDEV Mobile — À venir -->
+      <div class="ebook-list-card" style="opacity:0.65;">
+        <div class="ebook-mini-cover" style="border-left-color:rgba(0,201,167,0.3);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(0,201,167,0.5)" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px;">
+            <div class="ebook-list-title" style="color:#889;">WINDEV Mobile — Applications Android & iOS</div>
+            <span class="badge-cca" style="background:rgba(10,37,64,0.06);color:#aab;flex-shrink:0;">BIENTÔT</span>
+          </div>
+          <div class="ebook-list-meta">PDF · En cours de rédaction</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="badge-cca badge-domain" style="opacity:0.5;">Android</span>
+            <span class="badge-cca badge-domain" style="opacity:0.5;">iOS</span>
+          </div>
+          <button class="btn-disabled" disabled>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Bientôt disponible
+          </button>
+        </div>
+      </div>
+
+      <!-- Complexité algorithmique — À venir -->
+      <div class="ebook-list-card" style="opacity:0.65;">
+        <div class="ebook-mini-cover" style="border-left-color:rgba(0,201,167,0.3);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(0,201,167,0.5)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px;">
+            <div class="ebook-list-title" style="color:#889;">Complexité Algorithmique — Big O en profondeur</div>
+            <span class="badge-cca" style="background:rgba(10,37,64,0.06);color:#aab;flex-shrink:0;">BIENTÔT</span>
+          </div>
+          <div class="ebook-list-meta">PDF · En cours de rédaction</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="badge-cca badge-domain" style="opacity:0.5;">Big O</span>
+            <span class="badge-cca badge-domain" style="opacity:0.5;">Complexité</span>
+          </div>
+          <button class="btn-disabled" disabled>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Bientôt disponible
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <!-- /grid-ebooks-list -->
+
+    <!-- ============================================================
+         CTA NEWSLETTER
+         ============================================================ -->
+    <div class="divider"></div>
+    <div class="cta-newsletter">
+      <div>
+        <div class="cta-newsletter__label">ACCÈS GRATUIT</div>
+        <div class="cta-newsletter__title">Reçois les nouveaux ebooks en avant-première.</div>
+        <div class="cta-newsletter__desc">
+          Inscris-toi et reçois directement dans ta boîte mail chaque nouvel ebook dès sa sortie, en exclusivité avant la publication publique.
+        </div>
+      </div>
+      <div class="newsletter-form">
+        <input type="email" placeholder="ton@email.com">
+        <button class="btn-cca btn-teal" style="padding:10px 20px;font-size:13px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          S'inscrire
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         CTA ACCOMPAGNEMENT
+         ============================================================ -->
+    <div class="divider"></div>
+    <div class="cta-accompagnement">
+      <div>
+        <div class="cta-accompagnement__label">ACCOMPAGNEMENT PERSONNALISÉ</div>
+        <div class="cta-accompagnement__title">Un ebook ne suffit pas toujours.</div>
+        <div class="cta-accompagnement__desc">
+          Pour aller plus loin, nos sessions de mentorat 1:1 te permettent d'appliquer ce que tu lis avec un expert qui te guide pas à pas.
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;">
+        <a href="{% url 'accompagnement' %}" class="btn-cca btn-teal" style="padding:12px 26px;font-size:13px;">Découvrir ↗</a>
+        <a href="{% url 'contact' %}" class="btn-ghost">En savoir plus</a>
+      </div>
+    </div>
+
+  </div>
+  <!-- /ebooks-body -->
+
+</div>
+<!-- /ebooks-page -->
+{% endblock %}

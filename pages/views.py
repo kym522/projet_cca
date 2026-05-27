@@ -13,6 +13,9 @@ def formation(request):
 def accompagnement(request):
     return render(request, 'pages/accompagnement.html')
 
+def ebook(request):
+    return render(request, 'pages/ebook.html')
+
 def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
