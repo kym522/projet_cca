@@ -17,4 +17,7 @@ sqlparse==0.5.5
 typing_extensions==4.15.0
 tzdata==2026.1
 urllib3==2.6.3
+<<<<<<< HEAD
 whitenoise==6.12.0
+=======
+>>>>>>> e07aa96a340f77607f90539000db847fb3a77468
