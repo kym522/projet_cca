@@ -23,12 +23,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-akuoh8a!-p0rd@^77hy^=51e28(6m_k^6yic0m*$#*qvo=#xmp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
+<<<<<<< HEAD
 AUTH_USER_MODEL = 'pages.User'
+=======
+import os
+>>>>>>> 1bc22d564ca6f4c117fd43bd9fb1d70016a6a024
 
+PORT = os.environ.get('PORT', 8000)
 # Application definition
 
 INSTALLED_APPS = [
