@@ -29,9 +29,9 @@ ALLOWED_HOSTS = []
 
 <<<<<<< HEAD
 AUTH_USER_MODEL = 'pages.User'
-=======
+
 import os
->>>>>>> 1bc22d564ca6f4c117fd43bd9fb1d70016a6a024
+
 
 PORT = os.environ.get('PORT', 8000)
 # Application definition
