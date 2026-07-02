@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connexion / Inscription | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #0A2540; --primary-dark: #0D1B2E; --accent: #00C9A7;
+    --accent-muted: rgba(0,201,167,0.15); --accent-border: rgba(0,201,167,0.25);
+    --light: #F4F7FB; --card-border: #dde8f0; --input-bg: #F4F7FB;
+    --text-dark: #0A2540; --error: #e74c3c;
+  }
+  .auth-page { min-height:100vh; background:var(--primary); display:flex; align-items:center; justify-content:center; padding:40px 16px; position:relative; overflow:hidden; box-sizing:border-box; }
+  .auth-page::before { content:''; position:absolute; top:-80px; right:-80px; width:420px; height:420px; border-radius:50%; background:rgba(0,201,167,0.05); pointer-events:none; }
+  .auth-page::after  { content:''; position:absolute; bottom:-100px; left:-60px; width:300px; height:300px; border-radius:50%; background:rgba(0,201,167,0.04); pointer-events:none; }
+  .auth-bg-text { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-family:monospace; font-size:200px; font-weight:900; color:rgba(255,255,255,0.018); pointer-events:none; white-space:nowrap; user-select:none; }
+  .auth-card { position:relative; z-index:1; background:#fff; border-radius:16px; width:100%; max-width:520px; box-shadow:0 32px 80px rgba(0,0,0,0.25); overflow:hidden; }
+  .auth-logo { background:var(--primary); padding:24px 32px 20px; display:flex; align-items:center; gap:14px; border-bottom:3px solid var(--accent); }
+  .auth-logo svg { flex-shrink:0; }
+  .auth-logo__text-main { font-size:11px; font-weight:800; color:#fff; letter-spacing:1.5px; line-height:1; }
+  .auth-logo__text-code { font-size:18px; font-weight:900; color:var(--accent); font-family:monospace; line-height:1; }
+  .auth-logo__text-sub  { font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:2.5px; text-transform:uppercase; }
+  .auth-tabs { display:flex; border-bottom:1px solid var(--card-border); background:var(--light); }
+  .auth-tab { flex:1; padding:14px 16px; font-size:13px; font-weight:700; text-align:center; cursor:pointer; color:#889; border:none; background:none; transition:color 0.2s; border-bottom:3px solid transparent; margin-bottom:-1px; letter-spacing:0.3px; font-family:inherit; }
+  .auth-tab.active { color:var(--primary); border-bottom-color:var(--accent); background:#fff; }
+  .auth-tab:hover:not(.active) { color:var(--primary); }
+  .auth-body { padding:28px 32px 32px; }
+  .auth-panel { display:none; animation:fadeSlide 0.25s ease forwards; }
+  .auth-panel.active { display:block; }
+  @keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .auth-panel__title { font-size:18px; font-weight:900; color:var(--primary); margin-bottom:4px; }
+  .auth-panel__sub   { font-size:12px; color:#889; margin-bottom:24px; line-height:1.5; }
+  .field-group { margin-bottom:16px; }
+  .field-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .field-label { display:block; font-size:11px; font-weight:700; color:var(--primary); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:6px; }
+  .field-input { width:100%; border:1.5px solid var(--card-border); border-radius:8px; padding:11px 14px; font-size:13px; color:var(--primary); background:var(--input-bg); transition:border-color 0.2s,box-shadow 0.2s; box-sizing:border-box; outline:none; font-family:inherit; }
+  .field-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,201,167,0.12); background:#fff; }
+  .field-input.error { border-color:var(--error); box-shadow:0 0 0 3px rgba(231,76,60,0.10); }
+  .field-error { font-size:11px; color:var(--error); margin-top:4px; display:none; }
+  .field-error.visible { display:block; }
+  .field-password-wrap { position:relative; }
+  .field-password-wrap .field-input { padding-right:42px; }
+  .password-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#aaa; padding:0; display:flex; align-items:center; transition:color 0.15s; }
+  .password-toggle:hover { color:var(--accent); }
+  .phone-wrap { display:flex; border:1.5px solid var(--card-border); border-radius:8px; overflow:hidden; background:var(--input-bg); transition:border-color 0.2s,box-shadow 0.2s; }
+  .phone-wrap:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,201,167,0.12); background:#fff; }
+  .phone-country { border:none; border-right:1.5px solid var(--card-border); background:transparent; padding:11px 10px; font-size:13px; color:var(--primary); cursor:pointer; outline:none; flex-shrink:0; font-family:inherit; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23889'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; padding-right:24px; min-width:110px; }
+  .phone-number { border:none; background:transparent; padding:11px 14px; font-size:13px; color:var(--primary); flex:1; outline:none; font-family:inherit; width:100%; }
+  .password-strength { margin-top:8px; display:none; }
+  .password-strength.visible { display:block; }
+  .strength-bars { display:flex; gap:4px; margin-bottom:4px; }
+  .strength-bar { height:3px; flex:1; border-radius:2px; background:#e0e8f0; transition:background 0.3s; }
+  .strength-bar.active-weak { background:#e74c3c; } .strength-bar.active-medium { background:#f39c12; } .strength-bar.active-strong { background:var(--accent); }
+  .strength-label { font-size:10px; font-weight:700; color:#889; }
+  .btn-submit { width:100%; background:var(--primary); color:#fff; border:none; padding:14px; border-radius:8px; font-size:14px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:background 0.2s,transform 0.15s; margin-top:20px; font-family:inherit; }
+  .btn-submit:hover { background:var(--accent); color:var(--primary); transform:translateY(-1px); }
+  .auth-links { display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:8px; }
+  .auth-link { font-size:12px; color:#889; text-decoration:none; cursor:pointer; transition:color 0.15s; background:none; border:none; padding:0; font-family:inherit; }
+  .auth-link:hover { color:var(--accent); }
+  .auth-link.accent { color:var(--accent); font-weight:700; }
+  .auth-divider { display:flex; align-items:center; gap:12px; margin:20px 0; }
+  .auth-divider::before,.auth-divider::after { content:''; flex:1; height:1px; background:var(--card-border); }
+  .auth-divider span { font-size:11px; color:#aaa; font-weight:600; white-space:nowrap; }
+  .auth-alert { padding:12px 16px; border-radius:8px; font-size:12px; font-weight:600; margin-bottom:18px; display:flex; align-items:center; gap:10px; }
+  .auth-alert.success     { background:rgba(0,201,167,0.12); border:1px solid var(--accent); color:#006e5a; }
+  .auth-alert.error-alert { background:rgba(231,76,60,0.08); border:1px solid rgba(231,76,60,0.3); color:var(--error); }
+  .back-btn { background:none; border:none; color:var(--accent); font-size:12px; font-weight:700; cursor:pointer; padding:0; margin-bottom:16px; display:flex; align-items:center; gap:6px; font-family:inherit; transition:opacity 0.15s; }
+  .back-btn:hover { opacity:0.75; }
+  @media (max-width:560px) { .auth-card{border-radius:12px;} .auth-body{padding:22px 20px 28px;} .auth-logo{padding:18px 20px 16px;} .field-row-2{grid-template-columns:1fr;} .auth-bg-text{font-size:100px;} }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-bg-text">{ CCA }</div>
+  <div class="auth-card">
+
+    <!-- LOGO -->
+    <div class="auth-logo">
+      <svg viewBox="0 0 60 60" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 5 L2 30 L11 55"   stroke="#fff"    stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M49 5 L58 30 L49 55"  stroke="#fff"    stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 18 L33 30 L20 42" stroke="#00C9A7" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="auth-logo__text-main">CHALLENGE</div>
+        <div class="auth-logo__text-code">Code</div>
+        <div class="auth-logo__text-sub">ACADEMY</div>
+      </div>
+    </div>
+
+    <!-- ONGLETS : data-panel = nom du panneau cible -->
+    <div class="auth-tabs">
+      <button class="auth-tab" data-panel="login"    onclick="switchTab('login')">Se connecter</button>
+      <button class="auth-tab" data-panel="register" onclick="switchTab('register')">S'inscrire</button>
+    </div>
+
+    <div class="auth-body">
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="auth-alert {% if 'error' in message.tags %}error-alert{% else %}success{% endif %}">
+            {% if 'error' in message.tags %}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {% else %}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            {% endif %}
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- PANNEAU CONNEXION — id doit être "panel-login" -->
+      <div class="auth-panel" id="panel-login">
+        <div class="auth-panel__title">Bon retour 👋</div>
+        <div class="auth-panel__sub">Connecte-toi pour accéder à tes formations et ton suivi.</div>
+        <form method="post" action="{% url 'pages:auth' %}" novalidate id="form-login">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="login">
+          <div class="field-group">
+            <label class="field-label" for="login-email">Adresse email</label>
+            <input class="field-input" type="email" id="login-email" name="email" placeholder="ton@email.com" autocomplete="email" required value="{{ login_form.email.value|default:'' }}">
+            <div class="field-error" id="err-login-email">Email invalide.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="login-password">Mot de passe</label>
+            <div class="field-password-wrap">
+              <input class="field-input" type="password" id="login-password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('login-password',this)" aria-label="Afficher">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="field-error" id="err-login-password">Mot de passe requis.</div>
+          </div>
+          <button type="submit" class="btn-submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Se connecter
+          </button>
+        </form>
+        <div class="auth-links">
+          <button class="auth-link" onclick="switchTab('forgot')">Mot de passe oublié ?</button>
+          <button class="auth-link accent" onclick="switchTab('register')">Créer un compte →</button>
+        </div>
+      </div>
+
+      <!-- PANNEAU INSCRIPTION — id doit être "panel-register" -->
+      <div class="auth-panel" id="panel-register">
+        <div class="auth-panel__title">Crée ton compte 🚀</div>
+        <div class="auth-panel__sub">Rejoins des milliers d'apprenants sur Challenge Code Academy.</div>
+        <form method="post" action="{% url 'pages:auth' %}" novalidate id="form-register">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="register">
+          <div class="field-row-2">
+            <div class="field-group">
+              <label class="field-label" for="reg-first-name">Prénom</label>
+              <input class="field-input" type="text" id="reg-first-name" name="first_name" placeholder="Jean" autocomplete="given-name" required value="{{ register_form.first_name.value|default:'' }}">
+              <div class="field-error" id="err-first-name">Prénom requis.</div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="reg-last-name">Nom</label>
+              <input class="field-input" type="text" id="reg-last-name" name="last_name" placeholder="Dupont" autocomplete="family-name" required value="{{ register_form.last_name.value|default:'' }}">
+              <div class="field-error" id="err-last-name">Nom requis.</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="reg-username">Nom d'utilisateur</label>
+            <input class="field-input" type="text" id="reg-username" name="username" placeholder="jean_dev" autocomplete="username" required pattern="[a-zA-Z0-9_]+" value="{{ register_form.username.value|default:'' }}">
+            <div class="field-error" id="err-username">Lettres, chiffres et _ uniquement.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="reg-email">Adresse email</label>
+            <input class="field-input" type="email" id="reg-email" name="email" placeholder="ton@email.com" autocomplete="email" required value="{{ register_form.email.value|default:'' }}">
+            <div class="field-error" id="err-reg-email">Email invalide.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="reg-phone-number">Numéro de téléphone</label>
+            <div class="phone-wrap">
+              <select class="phone-country" id="reg-phone-country" name="phone_country">
+                <option value="+228">🇹🇬 +228</option><option value="+225">🇨🇮 +225</option>
+                <option value="+221">🇸🇳 +221</option><option value="+233">🇬🇭 +233</option>
+                <option value="+234">🇳🇬 +234</option><option value="+237">🇨🇲 +237</option>
+                <option value="+226">🇧🇫 +226</option><option value="+223">🇲🇱 +223</option>
+                <option value="+229">🇧🇯 +229</option><option value="+227">🇳🇪 +227</option>
+                <option value="+224">🇬🇳 +224</option><option value="+212">🇲🇦 +212</option>
+                <option value="+213">🇩🇿 +213</option><option value="+216">🇹🇳 +216</option>
+                <option value="+20">🇪🇬 +20</option> <option value="+33">🇫🇷 +33</option>
+                <option value="+32">🇧🇪 +32</option> <option value="+41">🇨🇭 +41</option>
+                <option value="+1">🇺🇸 +1</option>   <option value="+44">🇬🇧 +44</option>
+                <option value="+49">🇩🇪 +49</option> <option value="+351">🇵🇹 +351</option>
+              </select>
+              <input class="phone-number" type="tel" id="reg-phone-number" name="phone_number" placeholder="90 12 34 56" autocomplete="tel-national" required value="{{ register_form.phone_number.value|default:'' }}">
+            </div>
+            <div class="field-error" id="err-phone">Numéro invalide.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="reg-password">Mot de passe</label>
+            <div class="field-password-wrap">
+              <input class="field-input" type="password" id="reg-password" name="password1" placeholder="Minimum 8 caractères" autocomplete="new-password" required oninput="checkPasswordStrength(this.value)">
+              <button type="button" class="password-toggle" onclick="togglePassword('reg-password',this)" aria-label="Afficher">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="password-strength" id="password-strength">
+              <div class="strength-bars">
+                <div class="strength-bar" id="bar-1"></div><div class="strength-bar" id="bar-2"></div>
+                <div class="strength-bar" id="bar-3"></div><div class="strength-bar" id="bar-4"></div>
+              </div>
+              <div class="strength-label" id="strength-label">Trop court</div>
+            </div>
+            <div class="field-error" id="err-reg-password">8 caractères minimum.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="reg-password2">Confirmer le mot de passe</label>
+            <div class="field-password-wrap">
+              <input class="field-input" type="password" id="reg-password2" name="password2" placeholder="••••••••" autocomplete="new-password" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('reg-password2',this)" aria-label="Afficher">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="field-error" id="err-password2">Les mots de passe ne correspondent pas.</div>
+          </div>
+          <button type="submit" class="btn-submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            Créer mon compte
+          </button>
+        </form>
+        <div class="auth-links">
+          <span style="font-size:12px;color:#aaa;">Déjà inscrit ?</span>
+          <button class="auth-link accent" onclick="switchTab('login')">Se connecter →</button>
+        </div>
+      </div>
+
+      <!-- PANNEAU MOT DE PASSE OUBLIÉ — id doit être "panel-forgot" -->
+      <div class="auth-panel" id="panel-forgot">
+        <button class="back-btn" onclick="switchTab('login')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Retour à la connexion
+        </button>
+        <div class="auth-panel__title">Modifier mon mot de passe</div>
+        <div class="auth-panel__sub">Saisis ton email — tu recevras un lien pour réinitialiser ton mot de passe.</div>
+        <form method="post" action="{% url 'pages:password_reset' %}" novalidate id="form-forgot">
+          {% csrf_token %}
+          <div class="field-group">
+            <label class="field-label" for="forgot-email">Adresse email du compte</label>
+            <input class="field-input" type="email" id="forgot-email" name="email" placeholder="ton@email.com" autocomplete="email" required>
+            <div class="field-error" id="err-forgot-email">Email invalide.</div>
+          </div>
+          <button type="submit" class="btn-submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Envoyer le lien de réinitialisation
+          </button>
+        </form>
+        <div class="auth-divider"><span>ou</span></div>
+        <div style="text-align:center;">
+          <button class="auth-link accent" onclick="switchTab('register')" style="font-size:13px;">Créer un nouveau compte →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ============================================================
+     switchTab(panel)
+     panel = 'login' | 'register' | 'forgot'
+     Cherche l'élément #panel-{panel} et l'active
+     ============================================================ */
+  function switchTab(panel) {
+    // Cache tous les panneaux
+    document.querySelectorAll('.auth-panel').forEach(function(p) {
+      p.classList.remove('active');
+    });
+
+    // Affiche le bon panneau
+    var target = document.getElementById('panel-' + panel);
+    if (target) target.classList.add('active');
+
+    // Met à jour les onglets (seulement login/register ont un onglet)
+    document.querySelectorAll('.auth-tab').forEach(function(tab) {
+      tab.classList.remove('active');
+      if (tab.getAttribute('data-panel') === panel) {
+        tab.classList.add('active');
+      }
+    });
+  }
+
+  // Initialisation depuis Django (active_tab = 'login' ou 'register')
+  switchTab('{{ active_tab|default:"login" }}');
+
+  /* ============================================================
+     TOGGLE MOT DE PASSE
+     ============================================================ */
+  function togglePassword(inputId, btn) {
+    var input = document.getElementById(inputId);
+    var isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.innerHTML = isText
+      ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+      : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  }
+
+  /* ============================================================
+     FORCE MOT DE PASSE
+     ============================================================ */
+  function checkPasswordStrength(value) {
+    var el = document.getElementById('password-strength');
+    var bars = ['bar-1','bar-2','bar-3','bar-4'].map(function(id){ return document.getElementById(id); });
+    var label = document.getElementById('strength-label');
+    if (!value) { el.classList.remove('visible'); return; }
+    el.classList.add('visible');
+    var score = 0;
+    if (value.length >= 8)  score++;
+    if (value.length >= 12) score++;
+    if (/[A-Z]/.test(value) && /[0-9]/.test(value)) score++;
+    if (/[^A-Za-z0-9]/.test(value)) score++;
+    var cls    = ['','active-weak','active-medium','active-medium','active-strong'];
+    var labels = ['Trop court','Faible','Moyen','Bon','Fort 💪'];
+    var colors = ['','#e74c3c','#f39c12','#f39c12','#00C9A7'];
+    bars.forEach(function(bar, i) { bar.className = 'strength-bar'; if (i < score) bar.classList.add(cls[score]); });
+    label.textContent = labels[score];
+    label.style.color = colors[score];
+  }
+
+  /* ============================================================
+     VALIDATION CÔTÉ CLIENT
+     ============================================================ */
+  function chk(id, errId, testFn) {
+    var inp = document.getElementById(id), err = document.getElementById(errId);
+    if (testFn(inp.value)) { inp.classList.add('error'); err.classList.add('visible'); return false; }
+    inp.classList.remove('error'); err.classList.remove('visible'); return true;
+  }
+
+  document.getElementById('form-login').addEventListener('submit', function(e) {
+    var ok = true;
+    if (!chk('login-email',    'err-login-email',    function(v){ return !/\S+@\S+\.\S+/.test(v); })) ok = false;
+    if (!chk('login-password', 'err-login-password', function(v){ return !v; })) ok = false;
+    if (!ok) e.preventDefault();
+  });
+
+  document.getElementById('form-register').addEventListener('submit', function(e) {
+    var ok = true;
+    if (!chk('reg-first-name',   'err-first-name',   function(v){ return !v.trim(); })) ok = false;
+    if (!chk('reg-last-name',    'err-last-name',    function(v){ return !v.trim(); })) ok = false;
+    if (!chk('reg-username',     'err-username',     function(v){ return !v.trim() || !/^[a-zA-Z0-9_]+$/.test(v); })) ok = false;
+    if (!chk('reg-email',        'err-reg-email',    function(v){ return !/\S+@\S+\.\S+/.test(v); })) ok = false;
+    if (!chk('reg-phone-number', 'err-phone',        function(v){ return !v.trim() || v.trim().length < 6; })) ok = false;
+    if (!chk('reg-password',     'err-reg-password', function(v){ return v.length < 8; })) ok = false;
+    var p1 = document.getElementById('reg-password').value;
+    var p2 = document.getElementById('reg-password2');
+    var ep = document.getElementById('err-password2');
+    if (p2.value !== p1) { p2.classList.add('error'); ep.classList.add('visible'); ok = false; }
+    else { p2.classList.remove('error'); ep.classList.remove('visible'); }
+    if (!ok) e.preventDefault();
+  });
+
+  document.getElementById('form-forgot').addEventListener('submit', function(e) {
+    if (!chk('forgot-email', 'err-forgot-email', function(v){ return !/\S+@\S+\.\S+/.test(v); })) e.preventDefault();
+  });
+
+  document.querySelectorAll('.field-input, .phone-number').forEach(function(inp) {
+    inp.addEventListener('focus', function() { this.classList.remove('error'); });
+  });
+</script>
+{% endblock %}

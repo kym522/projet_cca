@@ -25,8 +25,9 @@ SECRET_KEY = 'django-insecure-akuoh8a!-p0rd@^77hy^=51e28(6m_k^6yic0m*$#*qvo=#xmp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'pages.User'
 
 # Application definition
 
@@ -53,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'cca_project.urls'
@@ -122,13 +122,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
+#TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 
 
 from django.contrib.messages import constants as messages

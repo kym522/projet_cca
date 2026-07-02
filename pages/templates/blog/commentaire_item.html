@@ -1,0 +1,63 @@
+{% load blog_extras %}
+<div class="commentaire" id="commentaire-{{ commentaire.id }}">
+  <div class="commentaire-header">
+    <div class="avatar avatar-commentaire" style="background-color: {{ commentaire.auteur|avatar_color }};">
+      {{ commentaire.auteur|initiales }}
+    </div>
+
+    <div class="commentaire-corps">
+      <div class="commentaire-meta">
+        <strong class="commentaire-auteur">{{ commentaire.auteur.get_full_name|default:commentaire.auteur.username }}</strong>
+        <span class="commentaire-date">{{ commentaire.date_creation|timesince }}</span>
+      </div>
+
+      <p class="commentaire-texte">{{ commentaire.contenu }}</p>
+
+      <div class="commentaire-actions">
+        {% if user.is_authenticated %}
+          <button type="button"
+                  class="btn-like{% if commentaire|est_like_par:user %} est-like{% endif %}"
+                  data-commentaire-id="{{ commentaire.id }}"
+                  data-liked="{% if commentaire|est_like_par:user %}1{% else %}0{% endif %}">
+            <span class="like-icon">
+              {% if commentaire|est_like_par:user %}👍{% else %}👍🏻{% endif %}
+            </span>
+            <span class="like-label">J'aime</span>
+            <span class="like-count">({{ commentaire.nb_likes }})</span>
+          </button>
+
+          <button type="button" class="btn-repondre" data-commentaire-id="{{ commentaire.id }}">
+            <span class="repondre-icon">↩</span> Répondre
+          </button>
+        {% else %}
+          <span class="like-readonly">👍 {{ commentaire.nb_likes }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Formulaire de réponse, masqué par défaut -->
+      {% if user.is_authenticated %}
+        <form class="form-reponse"
+              id="form-reponse-{{ commentaire.id }}"
+              method="post"
+              action="{% url 'pages:commentaire_ajouter' article.slug %}">
+          {% csrf_token %}
+          <input type="hidden" name="parent_id" value="{{ commentaire.id }}">
+          <textarea name="contenu" rows="2" placeholder="Répondre à {{ commentaire.auteur.username }}..." required></textarea>
+          <div class="form-reponse-actions">
+            <button type="button" class="btn-annuler-reponse" data-commentaire-id="{{ commentaire.id }}">Annuler</button>
+            <button type="submit" class="btn-envoyer-reponse">Envoyer</button>
+          </div>
+        </form>
+      {% endif %}
+
+      <!-- Réponses imbriquées (récursion) -->
+      {% if commentaire.reponses.all %}
+        <div class="reponses">
+          {% for reponse in commentaire.reponses.all %}
+            {% include "blog/commentaire_item.html" with commentaire=reponse %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

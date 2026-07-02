@@ -718,7 +718,6 @@
      ============================================================ */
   @media (max-width: 1100px) {
     .steps-grid    { grid-template-columns: repeat(2, 1fr); }
-    .formules-grid { grid-template-columns: repeat(3, 1fr); }
     .acc-hero__inner { gap: 36px; }
   }
 
@@ -768,7 +767,7 @@
           Challenge Code Academy ne se limite pas aux vidéos. Chaque apprenant bénéficie d'un suivi humain, d'un mentor dédié et d'un plan d'apprentissage taillé sur mesure — de la première ligne de code au premier projet professionnel.
         </p>
         <div class="acc-hero__cta">
-          <a href="{% url 'contact' %}" class="btn-cca btn-teal">Démarrer mon accompagnement ↗</a>
+          <a href="#formules" class="btn-cca btn-teal">Démarrer mon accompagnement ↗</a>
           <a href="#formules" class="btn-outline-white">Voir les formules</a>
         </div>
 
@@ -979,7 +978,7 @@
             <span style="color:#aaa;">Révision de code</span>
           </div>
         </div>
-        <a href="" class="btn-cca btn-navy" style="width:100%;text-align:center;">Commencer gratuitement</a>
+        <a href="{% url 'pages:inscription_accompagnement' 'starter' %}" class="btn-cca btn-navy" style="width:100%;text-align:center;">Commencer gratuitement</a>
       </div>
 
       <!-- Formule Pro — recommandée -->
@@ -1015,7 +1014,7 @@
             Communauté privée apprenants
           </div>
         </div>
-        <a href="{% url 'contact' %}" class="btn-cca btn-teal" style="width:100%;text-align:center;">Choisir Pro ↗</a>
+        <a href="{% url 'pages:inscription_accompagnement' 'pro' %}" class="btn-cca btn-teal" style="width:100%;text-align:center;">Choisir Pro ↗</a>
       </div>
 
       <!-- Formule Elite -->
@@ -1051,7 +1050,7 @@
             Réponse prioritaire sous 2h
           </div>
         </div>
-        <a href="{% url 'contact' %}" class="btn-cca btn-navy" style="width:100%;text-align:center;">Choisir Elite ↗</a>
+        <a href="{% url 'pages:inscription_accompagnement' 'elite' %}" class="btn-cca btn-navy" style="width:100%;text-align:center;">Choisir Elite ↗</a>
       </div>
 
     </div>
@@ -1115,6 +1114,9 @@
 
   <!-- ============================================================
        FAQ
+       CORRECTION : les onclick inline ont été supprimés — ils
+       dupliquaient le toggle déjà géré par le script JS en bas
+       de page, ce qui annulait l'ouverture (toggle x2 = fermé).
        ============================================================ -->
   <div class="faq-section">
     <div style="padding: 0 0 28px;">
@@ -1125,7 +1127,7 @@
     <div class="faq-grid">
 
       <div class="faq-item">
-        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+        <div class="faq-question">
           Comment se déroule le premier contact avec un formateur ?
           <div class="faq-toggle">+</div>
         </div>
@@ -1133,7 +1135,7 @@
       </div>
 
       <div class="faq-item">
-        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+        <div class="faq-question">
           Les sessions de mentorat ont-elles lieu en présentiel ?
           <div class="faq-toggle">+</div>
         </div>
@@ -1141,7 +1143,7 @@
       </div>
 
       <div class="faq-item">
-        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+        <div class="faq-question">
           Puis-je changer de formule en cours de route ?
           <div class="faq-toggle">+</div>
         </div>
@@ -1149,7 +1151,7 @@
       </div>
 
       <div class="faq-item">
-        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+        <div class="faq-question">
           Quelle différence entre mentorat et révision de code ?
           <div class="faq-toggle">+</div>
         </div>
@@ -1157,7 +1159,7 @@
       </div>
 
       <div class="faq-item">
-        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+        <div class="faq-question">
           Y a-t-il un engagement minimum de durée ?
           <div class="faq-toggle">+</div>
         </div>
@@ -1165,7 +1167,7 @@
       </div>
 
       <div class="faq-item">
-        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+        <div class="faq-question">
           Quels domaines sont couverts par l'accompagnement ?
           <div class="faq-toggle">+</div>
         </div>
@@ -1186,8 +1188,8 @@
         Rejoins des apprenants qui progressent chaque semaine grâce à un suivi humain, structuré et bienveillant. Ton premier bilan est gratuit.
       </p>
       <div class="cta-btns">
-        <a href="{% url 'contact' %}" class="btn-cca btn-teal">Demander mon bilan gratuit ↗</a>
-        <a href="{% url 'formation' %}" class="btn-outline-white">Explorer les formations</a>
+        <a href="#formules" class="btn-cca btn-teal">Demander mon bilan gratuit ↗</a>
+        <a href="{% url 'pages:formation' %}" class="btn-outline-white">Explorer les formations</a>
       </div>
     </div>
   </div>
@@ -1196,11 +1198,12 @@
 <!-- /accompagnement-page -->
 
 <script>
-  /* FAQ toggle — simple et natif, pas de dépendance */
+  /* FAQ toggle — seule source de vérité pour l'ouverture/fermeture
+     (les onclick inline en dur ont été retirés du HTML) */
   document.querySelectorAll('.faq-question').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var item = this.parentElement;
-      /* Ferme les autres */
+      /* Ferme les autres questions ouvertes (comportement accordéon) */
       document.querySelectorAll('.faq-item.open').forEach(function(open) {
         if (open !== item) open.classList.remove('open');
       });

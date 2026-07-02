@@ -1,0 +1,500 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription — {{ formule_info.nom }} | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  :root {
+    --primary:       #0A2540;
+    --primary-dark:  #0D1B2E;
+    --accent:        #00C9A7;
+    --accent-muted:  rgba(0, 201, 167, 0.15);
+    --accent-border: rgba(0, 201, 167, 0.25);
+    --light:         #F4F7FB;
+    --text-muted:    rgba(255, 255, 255, 0.55);
+    --text-dark:     #334155;
+    --card-border:   #e0e8f0;
+    --side-pad:      clamp(16px, 4vw, 56px);
+  }
+
+  .inscription-page .container,
+  .inscription-page .container-fluid {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .inscription-page {
+    background: var(--light);
+    width: 100%;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .insc-hero {
+    background: var(--primary);
+    padding: 56px var(--side-pad) 44px;
+    border-bottom: 4px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insc-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.05);
+    pointer-events: none;
+  }
+
+  .insc-hero__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .insc-hero__title {
+    color: #fff;
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+
+  .insc-hero__title span { color: var(--accent); }
+
+  .insc-hero__desc {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .formule-recap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--primary-dark);
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-top: 20px;
+  }
+
+  .formule-recap__name {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .formule-recap__price {
+    color: var(--accent);
+    font-size: 12px;
+    font-family: monospace;
+    font-weight: 700;
+  }
+
+  .formule-recap__change {
+    color: rgba(255,255,255,0.4);
+    font-size: 11px;
+    text-decoration: underline;
+    margin-left: 6px;
+  }
+
+  .formule-recap__change:hover { color: var(--accent); }
+
+  /* ============================================================
+     CORPS — FORMULAIRE
+     ============================================================ */
+  .insc-body {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 44px var(--side-pad) 64px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .insc-form-wrap {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .form-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    padding: 36px;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+  }
+
+  .form-section:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .form-section__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-section__label .num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-row:last-child { margin-bottom: 0; }
+
+  .form-field { margin-bottom: 16px; }
+  .form-field:last-child { margin-bottom: 0; }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .form-label .required { color: #e04444; }
+
+  .input-cca,
+  .textarea-cca {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--light);
+    border: 1.5px solid var(--card-border);
+    border-radius: 7px;
+    padding: 11px 14px;
+    font-size: 13px;
+    color: var(--primary);
+    font-family: inherit;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .input-cca:focus,
+  .textarea-cca:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .textarea-cca { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+  /* Choix multiples façon "pills" (checkbox / radio) */
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill-group input[type="checkbox"],
+  .pill-group input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .pill-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--card-border);
+    background: var(--light);
+    color: var(--text-dark);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .pill-group input:checked + label {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--accent);
+  }
+
+  .pill-group label:hover {
+    border-color: var(--accent);
+  }
+
+  .field-help {
+    font-size: 11px;
+    color: #889;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .field-errors {
+    color: #e04444;
+    font-size: 11px;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  .form-errors-banner {
+    background: rgba(224,68,68,0.08);
+    border: 1px solid rgba(224,68,68,0.25);
+    color: #c73030;
+    font-size: 12px;
+    padding: 12px 16px;
+    border-radius: 7px;
+    margin-bottom: 24px;
+  }
+
+  /* ============================================================
+     SUBMIT
+     ============================================================ */
+  .form-submit {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-cca {
+    padding: 13px 28px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-cca:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-teal { background: var(--accent); color: var(--primary); }
+
+  .form-privacy {
+    color: #889;
+    font-size: 11px;
+    line-height: 1.6;
+    max-width: 320px;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 600px) {
+    .insc-hero { padding: 40px var(--side-pad) 32px; }
+    .insc-body { padding: 32px var(--side-pad) 44px; }
+    .form-card { padding: 24px 18px; }
+    .form-row { grid-template-columns: 1fr; gap: 0; }
+    .form-submit { flex-direction: column; align-items: stretch; }
+    .btn-cca { width: 100%; text-align: center; }
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="inscription-page">
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <div class="insc-hero">
+    <div class="insc-hero__inner">
+      <div class="hero-tag">INSCRIPTION</div>
+      <h1 class="insc-hero__title">
+        Finalise ton inscription à<br>
+        l'accompagnement <span>{{ formule_info.nom }}</span>
+      </h1>
+      <p class="insc-hero__desc">
+        Quelques informations sur toi et tes objectifs suffisent pour que ton formateur prépare un plan d'apprentissage vraiment adapté à tes attentes.
+      </p>
+
+      <div class="formule-recap">
+        <span class="formule-recap__name">Formule {{ formule_info.nom }}</span>
+        <span class="formule-recap__price">{{ formule_info.prix }}</span>
+        <a href="{% url 'pages:accompagnement' %}#formules" class="formule-recap__change">Changer de formule</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FORMULAIRE
+       ============================================================ -->
+  <div class="insc-body">
+    <div class="insc-form-wrap">
+
+      <div class="form-card">
+
+        {% if form.non_field_errors %}
+        <div class="form-errors-banner">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form.formule }}
+
+          <!-- SECTION 1 — INFOS PERSONNELLES -->
+          <div class="form-section">
+            <div class="form-section__label">
+              <span class="num">1</span>
+              Tes informations
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label" for="{{ form.nom_complet.id_for_label }}">
+                  Nom complet <span class="required">*</span>
+                </label>
+                {{ form.nom_complet }}
+                {% if form.nom_complet.errors %}<div class="field-errors">{{ form.nom_complet.errors|striptags }}</div>{% endif %}
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="{{ form.telephone.id_for_label }}">
+                  Téléphone <span class="required">*</span>
+                </label>
+                {{ form.telephone }}
+                {% if form.telephone.errors %}<div class="field-errors">{{ form.telephone.errors|striptags }}</div>{% endif %}
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label" for="{{ form.email.id_for_label }}">
+                  Adresse email <span class="required">*</span>
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="field-errors">{{ form.email.errors|striptags }}</div>{% endif %}
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="{{ form.ville_pays.id_for_label }}">
+                  Ville, Pays
+                </label>
+                {{ form.ville_pays }}
+                {% if form.ville_pays.errors %}<div class="field-errors">{{ form.ville_pays.errors|striptags }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2 — PROFIL -->
+          <div class="form-section">
+            <div class="form-section__label">
+              <span class="num">2</span>
+              Ton profil
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Domaine(s) souhaité(s) <span class="required">*</span></label>
+              <div class="pill-group">
+                {% for checkbox in form.domaines %}
+                  {{ checkbox.tag }}
+                  <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                {% endfor %}
+              </div>
+              {% if form.domaines.errors %}<div class="field-errors">{{ form.domaines.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Ton niveau actuel <span class="required">*</span></label>
+              <div class="pill-group">
+                {% for radio in form.niveau %}
+                  {{ radio.tag }}
+                  <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                {% endfor %}
+              </div>
+              {% if form.niveau.errors %}<div class="field-errors">{{ form.niveau.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="form-field">
+              <label class="form-label">Disponibilité préférée <span class="required">*</span></label>
+              <div class="pill-group">
+                {% for radio in form.disponibilite %}
+                  {{ radio.tag }}
+                  <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                {% endfor %}
+              </div>
+              {% if form.disponibilite.errors %}<div class="field-errors">{{ form.disponibilite.errors|striptags }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- SECTION 3 — ATTENTES -->
+          <div class="form-section">
+            <div class="form-section__label">
+              <span class="num">3</span>
+              Tes attentes
+            </div>
+
+            <div class="form-field">
+              <label class="form-label" for="{{ form.attentes.id_for_label }}">
+                Décris tes objectifs et tes attentes <span class="required">*</span>
+              </label>
+              {{ form.attentes }}
+              <div class="field-help">
+                Plus c'est précis, plus ton formateur pourra préparer un accompagnement pertinent : ce que tu veux apprendre, tes blocages actuels, un projet en tête, ton rythme souhaité...
+              </div>
+              {% if form.attentes.errors %}<div class="field-errors">{{ form.attentes.errors|striptags }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- SUBMIT -->
+          <div class="form-submit">
+            <p class="form-privacy">
+              Tes données sont utilisées uniquement pour préparer ton accompagnement. Elles ne sont jamais partagées avec des tiers.
+            </p>
+            <button type="submit" class="btn-cca btn-teal">Valider mon inscription ↗</button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

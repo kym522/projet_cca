@@ -108,47 +108,37 @@
 
   /* ============================================================
      LOGO BOX
-     CORRECTION 4 : height:100% retiré — causait des débordements
-     quand le parent n'a pas de hauteur définie explicitement.
-     Remplacé par min-height pour garantir l'alignement.
+     CORRECTION 4 : padding retiré et image en object-fit:cover
+     pour que le logo remplisse entièrement la card, comme le
+     bloc de texte à côté. overflow:hidden empêche le débordement
+     du recadrage hors des coins arrondis.
      ============================================================ */
   .logo-box {
     background: #fff;
     border-radius: 16px;
-    padding: 40px 32px;
+    overflow: hidden;
     border: 1px solid var(--accent-border);
     min-height: 260px;
+    height: 100%;
+    padding: 0;
+  }
+
+  .logo-big {
+    width: 100%;
+    height: 100%;
+  }
+
+  .logo-big a {
+    width: 100%;
+    height: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
-  .logo-big svg {
-    width: 100px;
-    height: 100px;
-  }
-
-  .logo-big .text-main {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--primary);
-    letter-spacing: 1px;
-  }
-
-  .logo-big .text-code {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--accent);
-    font-family: monospace;
-    line-height: 1.1;
-  }
-
-  .logo-big .text-sub {
-    font-size: 10px;
-    color: #888;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 2px;
+  .logo-big img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   /* ============================================================
@@ -393,8 +383,7 @@
     }
 
     .logo-box {
-      min-height: auto;
-      padding: 28px 16px;
+      min-height: 200px;
     }
 
     .stats-band__grid {
@@ -439,7 +428,7 @@
 
     <!-- BOX : texte + logo -->
     <div class="about-box mt-4">
-      <div class="row align-items-center g-4">
+      <div class="row align-items-stretch g-4">
 
         <!-- TEXTE -->
         <div class="col-md-7 text-start about-box__text">
@@ -460,13 +449,10 @@
         <!-- LOGO -->
         <div class="col-md-5">
           <div class="logo-box">
-            <div class="logo-big text-center">
-
-              <!-- LOGO IMAGE -->
-    <a class="navbar-brand" href="{% url 'home' %}">
-      <img src="{% static 'images/logo.png' %}" alt="Challenge Code Academy" height="50">
-    </a>
-
+            <div class="logo-big">
+              <a class="navbar-brand" href="{% url 'pages:home' %}">
+                <img src="{% static 'images/logo_about.png' %}" alt="Challenge Code Academy">
+              </a>
             </div>
           </div>
         </div>
@@ -600,7 +586,7 @@
 
     <div class="d-flex justify-content-center gap-3 flex-wrap">
       <a href="" class="btn-accent">Explorer les formations ↗</a>
-      <a href="{% url 'contact' %}"   class="btn-outline-accent">Nous contacter</a>
+      <a href="{% url 'pages:contact' %}"   class="btn-outline-accent">Nous contacter</a>
     </div>
 
   </div>

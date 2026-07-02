@@ -1,0 +1,526 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscriptions Accompagnement — Admin | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  :root {
+    --primary:       #0A2540;
+    --primary-dark:  #0D1B2E;
+    --accent:        #00C9A7;
+    --accent-muted:  rgba(0, 201, 167, 0.15);
+    --accent-border: rgba(0, 201, 167, 0.25);
+    --light:         #F4F7FB;
+    --text-muted:    rgba(255, 255, 255, 0.55);
+    --text-dark:     #334155;
+    --card-border:   #e0e8f0;
+    --side-pad:      clamp(16px, 4vw, 56px);
+  }
+
+  .dash-page .container,
+  .dash-page .container-fluid {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .dash-page {
+    background: var(--light);
+    width: 100%;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .dash-hero {
+    background: var(--primary);
+    padding: 48px var(--side-pad) 36px;
+    border-bottom: 4px solid var(--accent);
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .dash-hero__title {
+    color: #fff;
+    font-size: clamp(20px, 2.6vw, 28px);
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .dash-hero__desc {
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* ============================================================
+     STATS
+     ============================================================ */
+  .dash-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-top: 28px;
+  }
+
+  .stat-box {
+    background: var(--primary-dark);
+    border: 1px solid var(--accent-border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  .stat-box__num {
+    color: var(--accent);
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-box__lbl {
+    color: rgba(255,255,255,0.45);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     CORPS
+     ============================================================ */
+  .dash-body {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 32px var(--side-pad) 56px;
+  }
+
+  .messages-banner {
+    background: rgba(0,201,167,0.10);
+    border: 1px solid var(--accent-border);
+    color: #007a63;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 7px;
+    margin-bottom: 20px;
+  }
+
+  /* ============================================================
+     FILTRES
+     ============================================================ */
+  .dash-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #889;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-right: 12px;
+    border-right: 1px solid var(--card-border);
+    margin-right: 4px;
+  }
+
+  .filter-chip {
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1.5px solid var(--card-border);
+    color: var(--text-dark);
+    font-family: monospace;
+    transition: all 0.15s;
+  }
+
+  .filter-chip:hover { border-color: var(--accent); color: var(--primary); }
+  .filter-chip.active { background: var(--primary); border-color: var(--primary); color: var(--accent); }
+
+  .filter-spacer { flex: 1; }
+
+  .filter-count {
+    font-size: 11px;
+    color: #889;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     LISTE INSCRIPTIONS
+     ============================================================ */
+  .inscriptions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .inscription-card {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+
+  .inscription-card.non-traite {
+    border-left: 4px solid #e0a336;
+  }
+
+  .inscription-card.traite {
+    border-left: 4px solid var(--accent);
+  }
+
+  .inscription-card__head {
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .inscription-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .inscription-main { flex: 1; min-width: 200px; }
+
+  .inscription-name {
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+
+  .inscription-contact {
+    color: #889;
+    font-size: 11px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .inscription-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .badge-cca {
+    display: inline-block;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .badge-formule-starter { background: rgba(0,201,167,0.12); color: #008870; }
+  .badge-formule-pro     { background: var(--accent-muted); color: var(--accent); background-color: rgba(0,201,167,0.15); color: #007a63; }
+  .badge-formule-elite   { background: rgba(255,193,7,0.15); color: #b07d00; }
+  .badge-niveau          { background: #F0F4F8; color: #445; }
+  .badge-statut-traite    { background: rgba(0,201,167,0.15); color: #007a63; }
+  .badge-statut-attente   { background: rgba(224,163,54,0.15); color: #a06a00; }
+
+  .inscription-date {
+    color: #aab;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .inscription-toggle-form {
+    flex-shrink: 0;
+  }
+
+  .btn-toggle {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1.5px solid var(--card-border);
+    background: #fff;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .btn-toggle:hover { border-color: var(--accent); color: var(--primary); }
+
+  .btn-toggle.is-traite {
+    background: var(--accent-muted);
+    border-color: var(--accent);
+    color: #007a63;
+  }
+
+  /* Détails dépliables (natif, sans JS) */
+  .inscription-card details summary {
+    padding: 10px 20px;
+    background: var(--light);
+    border-top: 1px solid var(--card-border);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .inscription-card details summary::-webkit-details-marker { display: none; }
+
+  .inscription-card details summary::before {
+    content: '▸';
+    color: var(--accent);
+    transition: transform 0.15s;
+  }
+
+  .inscription-card details[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  .inscription-details {
+    padding: 18px 20px 20px;
+    border-top: 1px solid var(--card-border);
+    background: var(--light);
+  }
+
+  .detail-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 10px;
+    align-items: start;
+  }
+
+  .detail-row:last-child { margin-bottom: 0; }
+
+  .detail-label {
+    color: #889;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    padding-top: 2px;
+  }
+
+  .detail-value {
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+
+  .detail-attentes {
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 7px;
+    padding: 12px 14px;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* ============================================================
+     EMPTY STATE
+     ============================================================ */
+  .empty-state {
+    background: #fff;
+    border: 1px dashed var(--card-border);
+    border-radius: 10px;
+    padding: 48px 24px;
+    text-align: center;
+    color: #889;
+    font-size: 13px;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px) {
+    .dash-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .dash-hero { padding: 36px var(--side-pad) 28px; }
+    .dash-body { padding: 24px var(--side-pad) 40px; }
+    .dash-stats { grid-template-columns: repeat(2, 1fr); }
+    .detail-row { grid-template-columns: 1fr; gap: 2px; }
+    .inscription-card__head { flex-direction: column; align-items: flex-start; }
+    .inscription-toggle-form { width: 100%; }
+    .btn-toggle { width: 100%; }
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-page">
+
+  <!-- ============================================================
+       HERO + STATS
+       ============================================================ -->
+  <div class="dash-hero">
+    <div class="hero-tag">ESPACE ADMIN</div>
+    <h1 class="dash-hero__title">Inscriptions à l'accompagnement</h1>
+    <p class="dash-hero__desc">Vue réservée à l'équipe — consulte les demandes reçues et leurs attentes détaillées.</p>
+
+    <div class="dash-stats">
+      <div class="stat-box">
+        <div class="stat-box__num">{{ total }}</div>
+        <div class="stat-box__lbl">Total</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__num">{{ total_non_traite }}</div>
+        <div class="stat-box__lbl">À traiter</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__num">{{ total_starter }}</div>
+        <div class="stat-box__lbl">Starter</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__num">{{ total_pro }}</div>
+        <div class="stat-box__lbl">Pro</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box__num">{{ total_elite }}</div>
+        <div class="stat-box__lbl">Elite</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CORPS
+       ============================================================ -->
+  <div class="dash-body">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="messages-banner">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- FILTRES -->
+    <div class="dash-filters">
+      <span class="filter-label">Formule :</span>
+      <a href="?{% if statut_filter %}statut={{ statut_filter }}{% endif %}" class="filter-chip {% if not formule_filter %}active{% endif %}">Toutes</a>
+      <a href="?formule=starter{% if statut_filter %}&statut={{ statut_filter }}{% endif %}" class="filter-chip {% if formule_filter == 'starter' %}active{% endif %}">Starter</a>
+      <a href="?formule=pro{% if statut_filter %}&statut={{ statut_filter }}{% endif %}" class="filter-chip {% if formule_filter == 'pro' %}active{% endif %}">Pro</a>
+      <a href="?formule=elite{% if statut_filter %}&statut={{ statut_filter }}{% endif %}" class="filter-chip {% if formule_filter == 'elite' %}active{% endif %}">Elite</a>
+
+      <span class="filter-label" style="margin-left:8px;">Statut :</span>
+      <a href="?{% if formule_filter %}formule={{ formule_filter }}{% endif %}" class="filter-chip {% if not statut_filter %}active{% endif %}">Tous</a>
+      <a href="?statut=non_traite{% if formule_filter %}&formule={{ formule_filter }}{% endif %}" class="filter-chip {% if statut_filter == 'non_traite' %}active{% endif %}">À traiter</a>
+      <a href="?statut=traite{% if formule_filter %}&formule={{ formule_filter }}{% endif %}" class="filter-chip {% if statut_filter == 'traite' %}active{% endif %}">Traité</a>
+
+      <div class="filter-spacer"></div>
+      <span class="filter-count">{{ inscriptions|length }} résultat{{ inscriptions|length|pluralize }}</span>
+    </div>
+
+    <!-- LISTE -->
+    {% if inscriptions %}
+    <div class="inscriptions-list">
+      {% for inscription in inscriptions %}
+      <div class="inscription-card {% if inscription.traite %}traite{% else %}non-traite{% endif %}">
+
+        <div class="inscription-card__head">
+
+          <div class="inscription-avatar">{{ inscription.nom_complet|first|upper }}</div>
+
+          <div class="inscription-main">
+            <div class="inscription-name">{{ inscription.nom_complet }}</div>
+            <div class="inscription-contact">
+              <span>{{ inscription.email }}</span>
+              <span>{{ inscription.telephone }}</span>
+              {% if inscription.ville_pays %}<span>{{ inscription.ville_pays }}</span>{% endif %}
+            </div>
+          </div>
+
+          <div class="inscription-badges">
+            <span class="badge-cca badge-formule-{{ inscription.formule }}">{{ inscription.get_formule_display }}</span>
+            <span class="badge-cca badge-niveau">{{ inscription.get_niveau_display }}</span>
+            {% if inscription.traite %}
+              <span class="badge-cca badge-statut-traite">TRAITÉ</span>
+            {% else %}
+              <span class="badge-cca badge-statut-attente">À TRAITER</span>
+            {% endif %}
+          </div>
+
+          <div class="inscription-date">{{ inscription.date_creation|date:"d M Y, H:i" }}</div>
+
+          <form method="post" action="{% url 'pages:toggle_inscription_traite' inscription.pk %}" class="inscription-toggle-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-toggle {% if inscription.traite %}is-traite{% endif %}">
+              {% if inscription.traite %}✓ Traité{% else %}Marquer traité{% endif %}
+            </button>
+          </form>
+
+        </div>
+
+        <details>
+          <summary>Voir les détails et les attentes</summary>
+          <div class="inscription-details">
+
+            <div class="detail-row">
+              <div class="detail-label">Domaines</div>
+              <div class="detail-value">{{ inscription.domaines }}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">Disponibilité</div>
+              <div class="detail-value">{{ inscription.get_disponibilite_display }}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">Attentes</div>
+              <div class="detail-value">
+                <div class="detail-attentes">{{ inscription.attentes|linebreaksbr }}</div>
+              </div>
+            </div>
+
+          </div>
+        </details>
+
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      Aucune inscription ne correspond à ces filtres.
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}

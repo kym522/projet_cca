@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+{% load blog_extras %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@500;600;700&display=swap');
+
+  .page-article {
+    background: linear-gradient(180deg, #f7f8fa 0%, #eef0f3 100%);
+    padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 32px) 64px;
+  }
+
+  .article-detail {
+    font-family: 'Merriweather', Georgia, serif;
+    color: #222;
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #e7e8eb;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    padding: clamp(20px, 4vw, 44px);
+    box-sizing: border-box;
+  }
+
+  .article-detail .article-titre {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.3rem);
+    line-height: 1.25;
+    color: #111;
+    margin: 0 0 18px;
+    letter-spacing: -0.3px;
+    word-wrap: break-word;
+  }
+
+  .article-detail .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: clamp(20px, 3vw, 28px);
+    font-family: 'Poppins', Arial, sans-serif;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+  }
+
+  .article-detail .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .article-detail .auteur-nom {
+    font-weight: 600;
+    color: #111;
+    font-size: 0.95rem;
+  }
+
+  .article-detail .date-publication {
+    color: #888;
+    font-size: 13px;
+  }
+
+  .article-detail .image-illustrative {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: clamp(20px, 4vw, 30px);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+    display: block;
+  }
+
+  .article-contenu {
+    font-size: clamp(0.98rem, 0.9rem + 0.3vw, 1.1rem);
+    line-height: 1.85;
+    overflow-wrap: break-word;
+  }
+
+  .article-contenu p {
+    margin: 0 0 18px;
+  }
+
+  .article-contenu h3 {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: 600;
+    font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+    color: #1a1a1a;
+    margin: 34px 0 14px;
+  }
+
+  .article-contenu strong {
+    font-weight: 700;
+    color: #111;
+  }
+
+  .article-contenu blockquote {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-style: italic;
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.18rem);
+    color: #444;
+    border-left: 3px solid #ccc;
+    padding-left: 16px;
+    margin: 24px 0;
+  }
+
+  .article-liste {
+    margin: 0 0 18px;
+    padding-left: 22px;
+  }
+
+  .article-liste li {
+    margin-bottom: 8px;
+  }
+
+  .commentaires-section {
+    max-width: 760px;
+    width: 100%;
+    margin: clamp(32px, 5vw, 50px) auto 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #e7e8eb;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    padding: clamp(20px, 4vw, 36px);
+    box-sizing: border-box;
+  }
+
+  .commentaires-section h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 18px;
+    color: #111;
+  }
+
+  .commentaires-section form textarea {
+    width: 100%;
+    font-family: 'Merriweather', Georgia, serif;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 12px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+
+  .commentaires-section button[type="submit"] {
+    margin-top: 8px;
+    background: #111;
+    color: #fff;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: 500;
+    transition: opacity 0.15s ease;
+  }
+
+  .commentaires-section button[type="submit"]:hover {
+    opacity: 0.85;
+  }
+
+  /* ---- Commentaires (un seul article, mais inclus récursivement) ---- */
+  .liste-commentaires {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .commentaire-header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .avatar-commentaire {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .commentaire-corps {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .commentaire-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .commentaire-auteur {
+    font-size: 0.92rem;
+    color: #111;
+  }
+
+  .commentaire-date {
+    color: #999;
+    font-size: 12px;
+  }
+
+  .commentaire-texte {
+    margin: 0 0 8px;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: #2b2b2b;
+    overflow-wrap: break-word;
+  }
+
+  /* ---- Boutons d'action (J'aime / Répondre) ---- */
+  .commentaire-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .btn-like,
+  .btn-repondre {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 16px;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    user-select: none;
+  }
+
+  .btn-like:hover,
+  .btn-repondre:hover {
+    background: #f0f1f3;
+    color: #111;
+  }
+
+  .btn-like:active,
+  .btn-repondre:active {
+    transform: scale(0.96);
+  }
+
+  .btn-like .like-icon {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .btn-like.est-like {
+    color: #1d6fd6;
+    background: #eaf2fd;
+  }
+
+  .btn-like.est-like:hover {
+    background: #dcebfb;
+    color: #1559ad;
+  }
+
+  .like-readonly {
+    font-size: 12.5px;
+    color: #999;
+    font-family: 'Poppins', Arial, sans-serif;
+  }
+
+  .repondre-icon {
+    font-size: 13px;
+  }
+
+  /* ---- Formulaire de réponse ---- */
+  .form-reponse {
+    display: none;
+    margin-top: 10px;
+    animation: apparition-douce 0.15s ease;
+  }
+
+  .form-reponse.ouvert {
+    display: block;
+  }
+
+  @keyframes apparition-douce {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-reponse textarea {
+    width: 100%;
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 0.92rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+
+  .form-reponse textarea:focus {
+    outline: none;
+    border-color: #888;
+  }
+
+  .form-reponse-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .btn-annuler-reponse {
+    background: none;
+    border: none;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #888;
+    cursor: pointer;
+    padding: 7px 14px;
+    border-radius: 6px;
+  }
+
+  .btn-annuler-reponse:hover {
+    background: #f0f1f3;
+    color: #333;
+  }
+
+  .btn-envoyer-reponse {
+    background: #111;
+    color: #fff;
+    border: none;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 7px 16px;
+    border-radius: 6px;
+    transition: opacity 0.15s ease;
+  }
+
+  .btn-envoyer-reponse:hover {
+    opacity: 0.85;
+  }
+
+  /* ---- Réponses imbriquées ---- */
+  .reponses {
+    margin-top: 14px;
+    padding-left: 18px;
+    border-left: 2px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ---- Ajustements mobiles ---- */
+  @media (max-width: 480px) {
+    .article-detail,
+    .commentaires-section {
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      padding: 18px;
+    }
+
+    .page-article {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .article-detail .image-illustrative {
+      border-radius: 0;
+      max-height: 280px;
+    }
+  }
+</style>
+
+<div class="page-article">
+  <article class="article-detail">
+    <img class="image-illustrative" src="{{ article.image.url }}" alt="{{ article.titre }}">
+
+    <h1 class="article-titre">{{ article.titre }}</h1>
+
+    <div class="article-meta">
+      <div class="avatar" style="background-color: {{ article.auteur|avatar_color }};">
+        {{ article.auteur|initiales }}
+      </div>
+      <div>
+        <div class="auteur-nom">{{ article.auteur.get_full_name|default:article.auteur.username }}</div>
+        <div class="date-publication">{{ article.date_creation|date:"d F Y" }}</div>
+      </div>
+    </div>
+
+    <div class="article-contenu">
+      {{ article.contenu|formater_article }}
+    </div>
+  </article>
+
+  <section class="commentaires-section">
+    <h2>{{ article.nb_commentaires }} commentaire{{ article.nb_commentaires|pluralize }}</h2>
+
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'pages:commentaire_ajouter' article.slug %}" style="margin-bottom:25px;">
+        {% csrf_token %}
+        {{ form.contenu }}
+        <button type="submit">Publier</button>
+      </form>
+    {% else %}
+      <p><a href="{% url 'login' %}">Connecte-toi</a> pour commenter.</p>
+    {% endif %}
+
+    <div class="liste-commentaires">
+      {% for commentaire in commentaires %}
+        {% include "blog/commentaire_item.html" with commentaire=commentaire %}
+      {% empty %}
+        <p>Aucun commentaire pour l'instant. Sois le premier à réagir !</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+  const csrftoken = getCookie("csrftoken");
+
+  document.body.addEventListener("click", function (e) {
+    if (e.target.closest(".btn-repondre")) {
+      const id = e.target.closest(".btn-repondre").dataset.commentaireId;
+      const formEl = document.getElementById("form-reponse-" + id);
+      if (formEl) {
+        formEl.classList.add("ouvert");
+        const textarea = formEl.querySelector("textarea");
+        if (textarea) textarea.focus();
+      }
+      return;
+    }
+
+    if (e.target.closest(".btn-annuler-reponse")) {
+      const id = e.target.closest(".btn-annuler-reponse").dataset.commentaireId;
+      const formEl = document.getElementById("form-reponse-" + id);
+      if (formEl) {
+        formEl.classList.remove("ouvert");
+        const textarea = formEl.querySelector("textarea");
+        if (textarea) textarea.value = "";
+      }
+    }
+  });
+
+  document.body.addEventListener("click", function (e) {
+    if (e.target.closest(".btn-like")) {
+      const btn = e.target.closest(".btn-like");
+      const id = btn.dataset.commentaireId;
+
+      fetch("{% url 'pages:commentaire_like_toggle' pk=0 %}".replace("0", id), {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          btn.dataset.liked = data.liked ? "1" : "0";
+          btn.classList.toggle("est-like", data.liked);
+          btn.querySelector(".like-count").textContent = "(" + data.nb_likes + ")";
+          btn.querySelector(".like-icon").textContent = data.liked ? "👍" : "👍🏻";
+        })
+        .catch((err) => console.error(err));
+    }
+  });
+});
+</script>
+{% endblock %}

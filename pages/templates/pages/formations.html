@@ -528,6 +528,197 @@
   .divider { height: 1px; background: #dde8f0; margin: 36px 0; }
 
   /* ============================================================
+     PLAYLISTS YOUTUBE — style natif YouTube
+     ============================================================ */
+  .grid-youtube {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  @media (max-width: 1024px) {
+    .grid-youtube { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .grid-youtube { grid-template-columns: 1fr; }
+  }
+
+  .youtube-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .youtube-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(10, 37, 64, 0.10);
+  }
+
+  /* Conteneur ratio 16:9 strict (format YouTube) + marge pour laisser
+     apparaître l'effet "pile de vidéos" derrière la thumbnail */
+  .youtube-thumb-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 10px 10px 0;
+  }
+
+  /* Couches de la pile (donnent l'impression d'une playlist, pas d'une vidéo seule) */
+  .youtube-stack-layer {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    height: 100%;
+    border-radius: 6px;
+    background: var(--primary-dark);
+  }
+
+  .youtube-stack-layer.layer-2 {
+    top: -8px;
+    opacity: 0.45;
+    z-index: 1;
+  }
+
+  .youtube-stack-layer.layer-1 {
+    top: -4px;
+    opacity: 0.7;
+    z-index: 2;
+  }
+
+  .youtube-thumb {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .youtube-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .youtube-thumb-fallback {
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(0,201,167,0.18) 0%, transparent 55%),
+      radial-gradient(circle at 80% 80%, rgba(0,201,167,0.10) 0%, transparent 50%),
+      var(--primary);
+  }
+
+  .youtube-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 37, 64, 0.25);
+    transition: background 0.2s ease;
+  }
+
+  .youtube-card:hover .youtube-play {
+    background: rgba(10, 37, 64, 0.4);
+  }
+
+  .youtube-play-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .youtube-card:hover .youtube-play-icon {
+    background: #FF0000;
+    transform: scale(1.08);
+  }
+
+  /* Badge nombre de vidéos — overlay façon YouTube, en bas-droite de la thumbnail */
+  .youtube-count-badge {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    z-index: 4;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1;
+  }
+
+  .youtube-body {
+    padding: 12px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .youtube-cat {
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .youtube-title {
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .youtube-meta {
+    margin-top: auto;
+    padding-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 11px;
+    color: #889;
+  }
+
+  .youtube-meta .youtube-cta {
+    color: var(--primary);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .youtube-card:hover .youtube-meta .youtube-cta {
+    color: #FF0000;
+  }
+
+  /* ============================================================
      RESPONSIVE COMPLÉMENTAIRE
      (Les règles de grille sont dans les blocs .grid-* au-dessus)
      ============================================================ */
@@ -640,9 +831,9 @@
         <div class="card-footer">
           <div class="meta-info">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            8 modules
+            31 modules
           </div>
-          <a href="" class="btn-cca btn-teal">Voir le cours ↗</a>
+          <a href="https://youtube.com/playlist?list=PLoHhBLkAuYf7wBNrKV6YJOz5QBU-au1ZP&si=Wrl_2IE5kacAKbhN" class="btn-cca btn-teal">Voir le cours ↗</a>
         </div>
       </div>
 
@@ -668,9 +859,9 @@
         <div class="card-footer">
           <div class="meta-info">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            6 modules
+            16 modules
           </div>
-          <a href="" class="btn-cca btn-navy">Voir le cours ↗</a>
+          <a href="https://youtube.com/playlist?list=PLoHhBLkAuYf47Oan2bcu7LemB3zsMa5k3&si=eqLbiO3GFxRHn65Z" class="btn-cca btn-navy">Voir le cours ↗</a>
         </div>
       </div>
 
@@ -683,7 +874,7 @@
               <span style="font-family:monospace;font-weight:900;font-size:16px;color:var(--accent);">POO</span>
             </div>
             <div style="display:flex;gap:5px;">
-              <span class="badge-cca badge-premium">PREMIUM</span>
+              
               <span class="badge-cca badge-free">GRATUIT</span>
             </div>
           </div>
@@ -699,9 +890,9 @@
         <div class="card-footer">
           <div class="meta-info">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            7 modules
+            11 modules
           </div>
-          <a href="" class="btn-cca btn-teal">Voir le cours ↗</a>
+          <a href="https://youtube.com/playlist?list=PLoHhBLkAuYf5rUH6B_U4k3VgDbwU57Ur6&si=c-aly2sKEXydTkDw" class="btn-cca btn-teal">Voir le cours ↗</a>
         </div>
       </div>
 
@@ -727,9 +918,9 @@
         <div class="card-footer">
           <div class="meta-info">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            5 modules
+            27 modules
           </div>
-          <a href="" class="btn-cca btn-navy">Voir le cours ↗</a>
+          <a href="https://youtube.com/playlist?list=PLoHhBLkAuYf5_kIII1kSsELYncr8tWKQ1&si=UAhmf-ghQ_EG7IYJ" class="btn-cca btn-navy">Voir le cours ↗</a>
         </div>
       </div>
 
@@ -798,13 +989,13 @@
         </div>
         <div style="flex:1;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">
-            <div class="ebook-title">Les 50 algorithmes à connaître</div>
-            <span class="badge-cca badge-free" style="flex-shrink:0;">GRATUIT</span>
+            <div class="ebook-title">50 algorithmes corrigés pour réussir en Génie Logiciel</div>
+            <span class="badge-cca badge-free" style="flex-shrink:0;">XOF 3500</span>
           </div>
           <div class="ebook-meta">PDF · 84 pages</div>
-          <a href="#" class="btn-cca btn-navy" style="margin-top:10px;font-size:11px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;">
+          <a href="https://challenge-code-academy.mymaketou.store/fr/products/50-algorithmes-corriges-pour-reussir-en-genie-logiciel" class="btn-cca btn-navy" style="margin-top:10px;font-size:11px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Télécharger
+            Télecharger
           </a>
         </div>
       </div>
@@ -816,7 +1007,7 @@
         <div style="flex:1;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">
             <div class="ebook-title">Débuter avec WINDEV — Guide complet</div>
-            <span class="badge-cca badge-premium" style="flex-shrink:0;">PREMIUM</span>
+            <span class="badge-cca badge-premium" style="flex-shrink:0;">En cours</span>
           </div>
           <div class="ebook-meta">PDF · 120 pages</div>
           <a href="#" class="btn-cca btn-teal" style="margin-top:10px;font-size:11px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;">
@@ -833,7 +1024,7 @@
         <div style="flex:1;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">
             <div class="ebook-title">Prompter l'IA pour mieux coder</div>
-            <span class="badge-cca badge-free" style="flex-shrink:0;">GRATUIT</span>
+            <span class="badge-cca badge-free" style="flex-shrink:0;">En cours</span>
           </div>
           <div class="ebook-meta">PDF · 56 pages</div>
           <a href="#" class="btn-cca btn-navy" style="margin-top:10px;font-size:11px;padding:5px 14px;display:inline-flex;align-items:center;gap:6px;">
@@ -860,9 +1051,184 @@
       </div>
       <div style="display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;">
         <a href="" class="btn-cca btn-teal" style="padding:12px 26px;font-size:13px;">Découvrir ↗</a>
-        <a href="{% url 'contact' %}" class="btn-ghost">En savoir plus</a>
+        <a href="{% url 'pages:contact' %}" class="btn-ghost">En savoir plus</a>
       </div>
     </div>
+
+    <!-- ============================================================
+         PLAYLISTS YOUTUBE — style natif YouTube
+         ============================================================ -->
+    <div class="divider"></div>
+    <div class="section-label">SUR NOTRE CHAÎNE</div>
+    <div class="section-title">Playlists YouTube de CCA</div>
+
+    <div class="grid-youtube">
+
+      <!-- ALGORITHMES -->
+      <a href="https://youtu.be/UTXLZfhzPUw?si=NgJyWAN5Fq21cPFz" target="_blank" rel="noopener" class="youtube-card">
+        <div class="youtube-thumb-wrap">
+          <div class="youtube-stack-layer layer-2"></div>
+          <div class="youtube-stack-layer layer-1"></div>
+          <div class="youtube-thumb">
+            <img src="https://i.ytimg.com/vi/UTXLZfhzPUw/hqdefault.jpg">
+            <div class="youtube-thumb-fallback"></div>
+            <div class="youtube-play">
+              <div class="youtube-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <span class="youtube-count-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              16 vidéos
+            </span>
+          </div>
+        </div>
+        <div class="youtube-body">
+          <span class="youtube-cat">ALGORITHMES</span>
+          <div class="youtube-title">Apprendre l'agorithmique pour débutant</div>
+          <div class="youtube-meta">
+            <span class="youtube-cta">Voir la playlist ↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- MYSQL -->
+      <a href="https://youtu.be/CmCZuhx7fNU?si=_-TEpKjsI7aW7h7I" target="_blank" rel="noopener" class="youtube-card">
+        <div class="youtube-thumb-wrap">
+          <div class="youtube-stack-layer layer-2"></div>
+          <div class="youtube-stack-layer layer-1"></div>
+          <div class="youtube-thumb">
+            <img src="https://i.ytimg.com/vi/CmCZuhx7fNU/hqdefault.jpg" alt="Formation MySQL" loading="lazy">
+            <div class="youtube-play">
+              <div class="youtube-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <span class="youtube-count-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              18 vidéos
+            </span>
+          </div>
+        </div>
+        <div class="youtube-body">
+          <span class="youtube-cat">MySQL</span>
+          <div class="youtube-title">Formation MySQL</div>
+          <div class="youtube-meta">
+            <span class="youtube-cta">Voir la playlist ↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- POO -->
+      <a href="https://www.youtube.com/playlist?list=REMPLACER_PAR_ID_POO" target="_blank" rel="noopener" class="youtube-card">
+        <div class="youtube-thumb-wrap">
+          <div class="youtube-stack-layer layer-2"></div>
+          <div class="youtube-stack-layer layer-1"></div>
+          <div class="youtube-thumb">
+            <div class="youtube-thumb-fallback"></div>
+            <div class="youtube-play">
+              <div class="youtube-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <span class="youtube-count-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              15 vidéos
+            </span>
+          </div>
+        </div>
+        <div class="youtube-body">
+          <span class="youtube-cat">POO</span>
+          <div class="youtube-title">La programmation orientée objet expliquée</div>
+          <div class="youtube-meta">
+            <span class="youtube-cta">Voir la playlist ↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- BASES DE DONNÉES -->
+      <a href="https://www.youtube.com/playlist?list=REMPLACER_PAR_ID_BDD" target="_blank" rel="noopener" class="youtube-card">
+        <div class="youtube-thumb-wrap">
+          <div class="youtube-stack-layer layer-2"></div>
+          <div class="youtube-stack-layer layer-1"></div>
+          <div class="youtube-thumb">
+            <div class="youtube-thumb-fallback"></div>
+            <div class="youtube-play">
+              <div class="youtube-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <span class="youtube-count-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              12 vidéos
+            </span>
+          </div>
+        </div>
+        <div class="youtube-body">
+          <span class="youtube-cat">Bases de données</span>
+          <div class="youtube-title">SQL et modélisation de A à Z</div>
+          <div class="youtube-meta">
+            <span class="youtube-cta">Voir la playlist ↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- IA & ACCÉLÉRATION -->
+      <a href="https://www.youtube.com/playlist?list=REMPLACER_PAR_ID_IA" target="_blank" rel="noopener" class="youtube-card">
+        <div class="youtube-thumb-wrap">
+          <div class="youtube-stack-layer layer-2"></div>
+          <div class="youtube-stack-layer layer-1"></div>
+          <div class="youtube-thumb">
+            <div class="youtube-thumb-fallback"></div>
+            <div class="youtube-play">
+              <div class="youtube-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <span class="youtube-count-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              9 vidéos
+            </span>
+          </div>
+        </div>
+        <div class="youtube-body">
+          <span class="youtube-cat">IA & Accélération</span>
+          <div class="youtube-title">Coder plus vite avec l'IA</div>
+          <div class="youtube-meta">
+            <span class="youtube-cta">Voir la playlist ↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- CHAÎNE COMPLÈTE -->
+      <a href="https://www.youtube.com/@challengecodeacademy" target="_blank" rel="noopener" class="youtube-card">
+        <div class="youtube-thumb-wrap">
+          <div class="youtube-stack-layer layer-2"></div>
+          <div class="youtube-stack-layer layer-1"></div>
+          <div class="youtube-thumb">
+            <div class="youtube-thumb-fallback"></div>
+            <div class="youtube-play">
+              <div class="youtube-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <span class="youtube-count-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+              Toutes playlists
+            </span>
+          </div>
+        </div>
+        <div class="youtube-body">
+          <span class="youtube-cat">Toutes les vidéos</span>
+          <div class="youtube-title">Visiter notre chaîne YouTube</div>
+          <div class="youtube-meta">
+            <span class="youtube-cta">S'abonner ↗</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+    <!-- /grid-youtube -->
 
   </div>
   <!-- /formations-body -->

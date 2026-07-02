@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription confirmée | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+
+  :root {
+    --primary:       #0A2540;
+    --primary-dark:  #0D1B2E;
+    --accent:        #00C9A7;
+    --accent-muted:  rgba(0, 201, 167, 0.15);
+    --accent-border: rgba(0, 201, 167, 0.25);
+    --light:         #F4F7FB;
+    --text-muted:    rgba(255, 255, 255, 0.55);
+    --side-pad:      clamp(16px, 4vw, 56px);
+  }
+
+  .success-page {
+    background: var(--primary);
+    width: 100%;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 72px var(--side-pad);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .success-page::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.05);
+    pointer-events: none;
+  }
+
+  .success-page::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 15%;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: rgba(0, 201, 167, 0.04);
+    pointer-events: none;
+  }
+
+  .success-card {
+    position: relative;
+    z-index: 1;
+    background: var(--primary-dark);
+    border: 1px solid var(--accent-border);
+    border-radius: 16px;
+    padding: 56px 44px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .success-icon {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    background: var(--accent-muted);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+  }
+
+  .success-title {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  .success-title span { color: var(--accent); }
+
+  .success-desc {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.75;
+    margin-bottom: 32px;
+  }
+
+  .success-steps {
+    text-align: left;
+    background: rgba(0,201,167,0.05);
+    border: 1px dashed var(--accent-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 32px;
+  }
+
+  .success-steps__label {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .success-steps ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .success-steps li {
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .success-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-cca {
+    padding: 12px 26px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-cca:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-teal { background: var(--accent); color: var(--primary); }
+
+  .btn-outline-white {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    padding: 11px 24px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-outline-white:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 500px) {
+    .success-card { padding: 40px 24px; }
+    .success-btns { flex-direction: column; align-items: stretch; }
+    .btn-cca, .btn-outline-white { width: 100%; text-align: center; }
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-page">
+  <div class="success-card">
+
+    <div class="success-icon">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00C9A7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+
+    <h1 class="success-title">Inscription <span>confirmée</span> !</h1>
+    <p class="success-desc">
+      Merci pour ta confiance. Ton inscription a bien été enregistrée et transmise à notre équipe pédagogique.
+    </p>
+
+    <div class="success-steps">
+      <div class="success-steps__label">PROCHAINES ÉTAPES</div>
+      <ul>
+        <li>Un membre de l'équipe examine ton profil et tes attentes</li>
+        <li>Tu es recontacté(e) sous 48h par email ou téléphone</li>
+        <li>Un premier appel de 15 min est planifié pour cadrer ton plan</li>
+        <li>Ton accompagnement démarre dès validation du plan</li>
+      </ul>
+    </div>
+
+    <div class="success-btns">
+      <a href="{% url 'pages:home' %}" class="btn-cca btn-teal">Retour à l'accueil ↗</a>
+      <a href="{% url 'pages:formation' %}" class="btn-outline-white">Explorer les formations</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

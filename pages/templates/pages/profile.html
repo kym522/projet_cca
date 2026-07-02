@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mon Profil | Challenge Code Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-hero {
+    background: #0A2540;
+    padding: 56px 0 90px;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(0,201,167,0.06);
+  }
+
+  .profile-avatar {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: #00C9A7;
+    color: #0A2540;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 900;
+    font-family: monospace;
+    border: 4px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+
+  .profile-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(10,37,64,0.12);
+    margin-top: -56px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .profile-card .card-header-custom {
+    padding: 24px 32px;
+    border-bottom: 1px solid #eef1f5;
+  }
+
+  .profile-card .card-body-custom {
+    padding: 28px 32px 32px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0A2540;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-control {
+    border: 1.5px solid #dde8f0;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 13px;
+    color: #0A2540;
+    background: #F4F7FB;
+  }
+  .form-control:focus {
+    border-color: #00C9A7;
+    box-shadow: 0 0 0 3px rgba(0,201,167,0.12);
+    background: #fff;
+  }
+  .form-control:disabled,
+  .form-select:disabled {
+    color: #aab4bf;
+    background: #eef2f6;
+    cursor: not-allowed;
+  }
+  .form-select {
+    border: 1.5px solid #dde8f0;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 13px;
+    color: #0A2540;
+    background-color: #F4F7FB;
+  }
+  .form-select:focus {
+    border-color: #00C9A7;
+    box-shadow: 0 0 0 3px rgba(0,201,167,0.12);
+  }
+
+  .field-hint {
+    font-size: 11px;
+    color: #aab4bf;
+    margin-top: 4px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #889;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 28px 0 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #eef1f5;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  @media (max-width: 576px) {
+    .profile-hero { padding: 40px 0 70px; }
+    .profile-card .card-header-custom,
+    .profile-card .card-body-custom { padding: 20px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="profile-hero">
+  <div class="container">
+    <span class="tag">MON ESPACE</span>
+    <h1 class="text-light mt-3 mb-0" style="font-weight:900;">Mon profil</h1>
+    <p class="mb-0" style="color:rgba(255,255,255,0.5);font-size:13px;">Gère tes informations personnelles et tes coordonnées.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="profile-card">
+
+        <!-- EN-TÊTE IDENTITÉ -->
+        <div class="card-header-custom d-flex align-items-center gap-3">
+          <div class="profile-avatar">{% if user.first_name %}{{ user.first_name|slice:":1"|upper }}{% endif %}{% if user.last_name %}{{ user.last_name|slice:":1"|upper }}{% endif %}{% if not user.first_name and not user.last_name %}{{ user.username|slice:":1"|upper }}{% endif %}</div>
+          <div>
+            <div style="color:#0A2540;font-size:17px;font-weight:900;">{{ user.first_name }} {{ user.last_name }}</div>
+            <span class="chip">@{{ user.username }}</span>
+          </div>
+        </div>
+
+        <div class="card-body-custom">
+
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert {% if 'error' in message.tags %}alert-danger{% else %}alert-success{% endif %} d-flex align-items-center gap-2" style="font-size:13px;">
+                {% if 'error' in message.tags %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                {% else %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                {% endif %}
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <form method="post" action="{% url 'pages:profile' %}" novalidate id="form-profile">
+            {% csrf_token %}
+
+            <div class="section-label">Informations personnelles</div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="field-label" for="profile-first-name">Prénom</label>
+                <input class="form-control" type="text" id="profile-first-name" name="first_name" placeholder="Jean" autocomplete="given-name" required value="{{ user.first_name }}">
+                <div class="field-hint text-danger d-none" id="err-first-name">Prénom requis.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="field-label" for="profile-last-name">Nom</label>
+                <input class="form-control" type="text" id="profile-last-name" name="last_name" placeholder="Dupont" autocomplete="family-name" required value="{{ user.last_name }}">
+                <div class="field-hint text-danger d-none" id="err-last-name">Nom requis.</div>
+              </div>
+            </div>
+
+            <div class="row g-3 mt-0">
+              <div class="col-12">
+                <label class="field-label" for="profile-phone-number">Numéro de téléphone</label>
+                <div class="input-group">
+                  <select class="form-select flex-grow-0" id="profile-phone-country" name="phone_country" style="max-width:120px;">
+                    <option value="+228" {% if user.phone_country == "+228" %}selected{% endif %}>🇹🇬 +228</option>
+                    <option value="+225" {% if user.phone_country == "+225" %}selected{% endif %}>🇨🇮 +225</option>
+                    <option value="+221" {% if user.phone_country == "+221" %}selected{% endif %}>🇸🇳 +221</option>
+                    <option value="+233" {% if user.phone_country == "+233" %}selected{% endif %}>🇬🇭 +233</option>
+                    <option value="+234" {% if user.phone_country == "+234" %}selected{% endif %}>🇳🇬 +234</option>
+                    <option value="+237" {% if user.phone_country == "+237" %}selected{% endif %}>🇨🇲 +237</option>
+                    <option value="+226" {% if user.phone_country == "+226" %}selected{% endif %}>🇧🇫 +226</option>
+                    <option value="+223" {% if user.phone_country == "+223" %}selected{% endif %}>🇲🇱 +223</option>
+                    <option value="+229" {% if user.phone_country == "+229" %}selected{% endif %}>🇧🇯 +229</option>
+                    <option value="+227" {% if user.phone_country == "+227" %}selected{% endif %}>🇳🇪 +227</option>
+                    <option value="+224" {% if user.phone_country == "+224" %}selected{% endif %}>🇬🇳 +224</option>
+                    <option value="+212" {% if user.phone_country == "+212" %}selected{% endif %}>🇲🇦 +212</option>
+                    <option value="+213" {% if user.phone_country == "+213" %}selected{% endif %}>🇩🇿 +213</option>
+                    <option value="+216" {% if user.phone_country == "+216" %}selected{% endif %}>🇹🇳 +216</option>
+                    <option value="+20"  {% if user.phone_country == "+20"  %}selected{% endif %}>🇪🇬 +20</option>
+                    <option value="+33"  {% if user.phone_country == "+33"  %}selected{% endif %}>🇫🇷 +33</option>
+                    <option value="+32"  {% if user.phone_country == "+32"  %}selected{% endif %}>🇧🇪 +32</option>
+                    <option value="+41"  {% if user.phone_country == "+41"  %}selected{% endif %}>🇨🇭 +41</option>
+                    <option value="+1"   {% if user.phone_country == "+1"   %}selected{% endif %}>🇺🇸 +1</option>
+                    <option value="+44"  {% if user.phone_country == "+44"  %}selected{% endif %}>🇬🇧 +44</option>
+                    <option value="+49"  {% if user.phone_country == "+49"  %}selected{% endif %}>🇩🇪 +49</option>
+                    <option value="+351" {% if user.phone_country == "+351" %}selected{% endif %}>🇵🇹 +351</option>
+                  </select>
+                  <input class="form-control" type="tel" id="profile-phone-number" name="phone_number" placeholder="90 12 34 56" autocomplete="tel-national" required value="{{ user.phone_number }}">
+                </div>
+                <div class="field-hint text-danger d-none" id="err-phone">Numéro invalide.</div>
+              </div>
+            </div>
+
+            <div class="section-label">Identifiants</div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="field-label" for="profile-username">Nom d'utilisateur</label>
+                <input class="form-control" type="text" id="profile-username" value="{{ user.username }}" disabled>
+                <div class="field-hint">Non modifiable.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="field-label" for="profile-email">Adresse email</label>
+                <input class="form-control" type="email" id="profile-email" value="{{ user.email }}" disabled>
+                <div class="field-hint">Non modifiable.</div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-accent w-100 mt-4 py-2" style="font-weight:800;">
+              Enregistrer les modifications
+            </button>
+          </form>
+
+          <div class="text-center mt-3">
+            <a href="{% url 'pages:password_reset' %}" class="text-accent" style="font-size:12px;font-weight:700;">Modifier mon mot de passe →</a>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="text-center my-4">
+        <a href="{% url 'pages:home' %}" class="text-muted" style="font-size:12px;">← Retour à l'accueil</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function chk(id, errId, testFn) {
+    var inp = document.getElementById(id), err = document.getElementById(errId);
+    if (testFn(inp.value)) { inp.classList.add('is-invalid'); err.classList.remove('d-none'); return false; }
+    inp.classList.remove('is-invalid'); err.classList.add('d-none'); return true;
+  }
+
+  document.getElementById('form-profile').addEventListener('submit', function(e) {
+    var ok = true;
+    if (!chk('profile-first-name',  'err-first-name', function(v){ return !v.trim(); })) ok = false;
+    if (!chk('profile-last-name',   'err-last-name',  function(v){ return !v.trim(); })) ok = false;
+    if (!chk('profile-phone-number','err-phone',      function(v){ return !v.trim() || v.trim().length < 6; })) ok = false;
+    if (!ok) e.preventDefault();
+  });
+
+  document.querySelectorAll('#form-profile .form-control:not(:disabled)').forEach(function(inp) {
+    inp.addEventListener('focus', function() { this.classList.remove('is-invalid'); });
+  });
+</script>
+{% endblock %}

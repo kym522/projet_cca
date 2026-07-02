@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% load blog_extras %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@500;600;700&display=swap');
+
+  .fond-articles {
+    background: linear-gradient(180deg, #f7f8fa 0%, #eef0f3 100%);
+    padding: 48px 20px 64px;
+    min-height: 100%;
+  }
+
+  .liste-articles-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: 'Merriweather', Georgia, serif;
+  }
+
+  .liste-articles-page .page-titre {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: #111;
+    margin-bottom: 22px;
+    letter-spacing: -0.5px;
+  }
+
+  .lien-nouvel-article {
+    display: inline-block;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    background: #111;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 32px;
+    transition: opacity 0.15s ease;
+  }
+
+  .lien-nouvel-article:hover {
+    opacity: 0.85;
+  }
+
+  /* ---- Grille adaptative ---- */
+  .liste-articles {
+    display: grid;
+    gap: 28px;
+  }
+
+  /* 1 seul article : pleine page, mise en avant */
+  .liste-articles.nb-1 {
+    grid-template-columns: 1fr;
+  }
+
+  /* 2 articles : côte à côte, encore assez grands */
+  .liste-articles.nb-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* 3 articles et plus : grille compacte qui se réduit */
+  .liste-articles.nb-3,
+  .liste-articles.nb-4-plus {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+  }
+
+  /* ---- Carte article ---- */
+  .article-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e7e8eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .article-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+
+  .article-card .vignette {
+    width: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Taille de l'image selon le mode d'affichage */
+  .liste-articles.nb-1 .article-card .vignette {
+    height: 440px;
+  }
+
+  .liste-articles.nb-2 .article-card .vignette {
+    height: 280px;
+  }
+
+  .liste-articles.nb-3 .article-card .vignette,
+  .liste-articles.nb-4-plus .article-card .vignette {
+    height: 180px;
+  }
+
+  .article-card .contenu-carte {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 24px 24px;
+  }
+
+  .liste-articles.nb-3 .contenu-carte,
+  .liste-articles.nb-4-plus .contenu-carte {
+    padding: 16px 18px 18px;
+  }
+
+  .article-card h2 {
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: 600;
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+
+  .liste-articles.nb-1 .article-card h2 {
+    font-size: 1.7rem;
+  }
+
+  .liste-articles.nb-2 .article-card h2 {
+    font-size: 1.3rem;
+  }
+
+  .liste-articles.nb-3 .article-card h2,
+  .liste-articles.nb-4-plus .article-card h2 {
+    font-size: 1.05rem;
+  }
+
+  .article-card h2 a {
+    color: #111;
+    text-decoration: none;
+  }
+
+  .article-card h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .article-card .article-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .article-card .avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .article-card p.extrait {
+    margin: 0;
+    color: #444;
+    line-height: 1.65;
+  }
+
+  .liste-articles.nb-1 .article-card p.extrait {
+    font-size: 1.05rem;
+  }
+
+  .liste-articles.nb-3 .article-card p.extrait,
+  .liste-articles.nb-4-plus .article-card p.extrait {
+    font-size: 0.92rem;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .aucun-article {
+    text-align: center;
+    padding: 60px 0;
+    color: #888;
+    font-family: 'Poppins', Arial, sans-serif;
+  }
+</style>
+
+<div class="fond-articles">
+  <div class="liste-articles-page">
+    <h1 class="page-titre">Articles disponibles</h1>
+
+    
+    {% with nb_articles=articles|length %}
+      <div class="liste-articles
+        {% if nb_articles == 1 %}nb-1
+        {% elif nb_articles == 2 %}nb-2
+        {% elif nb_articles == 3 %}nb-3
+        {% else %}nb-4-plus
+        {% endif %}">
+        {% for article in articles %}
+          <div class="article-card">
+            <img class="vignette" src="{{ article.image.url }}" alt="{{ article.titre }}">
+
+            <div class="contenu-carte">
+              <h2><a href="{{ article.get_absolute_url }}">{{ article.titre }}</a></h2>
+
+              <div class="article-meta">
+                <div class="avatar" style="background-color: {{ article.auteur|avatar_color }};">
+                  {{ article.auteur|initiales }}
+                </div>
+                <span>{{ article.auteur.get_full_name|default:article.auteur.username }}</span>
+                <span>· {{ article.date_creation|date:"d M Y" }}</span>
+                <span>· {{ article.nb_commentaires }} commentaire{{ article.nb_commentaires|pluralize }}</span>
+              </div>
+
+              <p class="extrait">
+                {% if nb_articles == 1 %}
+                  {{ article.contenu|truncatewords:60 }}
+                {% else %}
+                  {{ article.contenu|truncatewords:28 }}
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        {% empty %}
+          <p class="aucun-article">Aucun article pour l'instant.</p>
+        {% endfor %}
+      </div>
+    {% endwith %}
+  </div>
+</div>
+{% endblock %}
