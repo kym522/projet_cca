@@ -25,15 +25,11 @@ SECRET_KEY = 'django-insecure-akuoh8a!-p0rd@^77hy^=51e28(6m_k^6yic0m*$#*qvo=#xmp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['projetcca-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://projetcca-production.up.railway.app']
 
-<<<<<<< HEAD
 AUTH_USER_MODEL = 'pages.User'
 
-import os
-
-
-PORT = os.environ.get('PORT', 8000)
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,6 +49,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -125,6 +122,17 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
+
+
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
