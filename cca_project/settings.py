@@ -28,6 +28,15 @@ DEBUG = False
 ALLOWED_HOSTS = ['projetcca-production.up.railway.app']
 CSRF_TRUSTED_ORIGINS = ['https://projetcca-production.up.railway.app']
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 AUTH_USER_MODEL = 'pages.User'
 
 # Application definition
