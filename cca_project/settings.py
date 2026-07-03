@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-akuoh8a!-p0rd@^77hy^=51e28(6m_k^6yic0m*$#*qvo=#xmp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['projetcca-production.up.railway.app']
 CSRF_TRUSTED_ORIGINS = ['https://projetcca-production.up.railway.app']
