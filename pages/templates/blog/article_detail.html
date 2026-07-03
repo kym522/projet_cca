@@ -422,7 +422,7 @@
         <button type="submit">Publier</button>
       </form>
     {% else %}
-      <p><a href="{% url 'login' %}">Connecte-toi</a> pour commenter.</p>
+      <p><a href="{% url 'pages:auth' %}">Connecte-toi</a> pour commenter.</p>
     {% endif %}
 
     <div class="liste-commentaires">
