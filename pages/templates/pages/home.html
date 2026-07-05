@@ -156,8 +156,17 @@
     .cta-bg-text    { font-size: 120px; }
 
     /* Barre domaines : label en haut sur tablette */
-    .domaines-bar__inner { flex-wrap: wrap; }
-    .domaines-bar__label { width: 100%; border-right: none; border-bottom: 1px solid rgba(0,0,0,0.08); justify-content: center; }
+.domaines-bar__inner {
+  flex-wrap: wrap;
+  justify-content: flex-start;  /* ajouté : évite l'étirement pleine largeur */
+  gap: 12px;                    /* ajouté : espace régulier entre les éléments */
+}
+.domaines-bar__label {
+  width: 100%;
+  border-right: none;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  justify-content: center;
+}
   }
 
   @media (max-width: 600px) {
