@@ -155,17 +155,20 @@
     .accompagnement-grid { grid-template-columns: 1fr; padding: 48px 24px; gap: 32px; }
     .cta-bg-text    { font-size: 120px; }
 
-    /* Barre domaines : label en haut sur tablette */
-.domaines-bar__inner {
-  flex-wrap: wrap;
-  justify-content: flex-start;  /* ajouté : évite l'étirement pleine largeur */
-  gap: 12px;                    /* ajouté : espace régulier entre les éléments */
+   .domaines-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* au lieu de space-between ou space-around */
+  gap: 12px; /* espace simple entre chaque élément */
+  width: auto; /* ne prend pas toute la largeur */
 }
+
 .domaines-bar__label {
-  width: 100%;
-  border-right: none;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  justify-content: center;
+  flex: 0 0 auto; /* empêche l'étirement */
+}
+
+.domaines-bar__badge {
+  flex: 0 0 auto; /* empêche l'étirement */
 }
   }
 
