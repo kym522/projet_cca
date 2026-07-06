@@ -58,22 +58,50 @@
   .card-ia {
     grid-column: span 2;
   }
-  .domaines-bar__inner {
+  .domaines-bar {
+  background: #0f172a; /* ou la couleur de fond que tu utilises déjà */
+  padding: 14px 24px;
+}
+
+.domaines-bar__inner {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* au lieu de space-between ou space-around */
-  gap: 12px; /* espace simple entre chaque élément */
-  width: auto; /* ne prend pas toute la largeur */
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .domaines-bar__label {
-  flex: 0 0 auto; /* empêche l'étirement */
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-right: 8px;
+  flex: 0 0 auto;
 }
 
 .domaines-bar__badge {
-  flex: 0 0 auto; /* empêche l'étirement */
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 999px; /* forme "pilule" */
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+  flex: 0 0 auto;
 }
 
+.domaines-bar__badge:hover {
+  background: rgba(59, 130, 246, 0.2); /* bleu au survol */
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #fff;
+  transform: translateY(-1px);
+}
   /* =============================================
      CTA FINAL
   ============================================= */
