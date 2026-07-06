@@ -20,64 +20,9 @@
     display: inline-block;
   }
 
-  /* =============================================
-     BARRE DOMAINES — pleine largeur, badges espacés
-  ============================================= */
-  .domaines-bar {
-    background: #00C9A7;
-    padding: 0;
-    width: 100%;
-    box-sizing: border-box;
-  }
+ 
 
-  .domaines-bar__inner {
-    display: flex;
-    align-items: stretch;
-    width: 100%;
-  }
-
-  /* Label "DOMAINES :" fixe à gauche */
-  .domaines-bar__label {
-    background: #009e84;           /* légèrement plus sombre pour contraster */
-    color: #0A2540;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 14px 24px;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    border-right: 1px solid rgba(0,0,0,0.08);
-  }
-
-  /* Chaque badge prend une part égale de l'espace restant */
-  .domaines-bar__badge {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 8px;
-    font-size: 12px;
-    font-weight: 800;
-    color: #0A2540;
-    font-family: monospace;
-    letter-spacing: 1px;
-    border-right: 1px solid rgba(0,0,0,0.08);
-    transition: background 0.15s;
-    text-decoration: none;
-    cursor: default;
-  }
-
-  .domaines-bar__badge:last-child {
-    border-right: none;
-  }
-
-  .domaines-bar__badge:hover {
-    background: rgba(0,0,0,0.06);
-  }
-
+  
   /* =============================================
      GRILLES RESPONSIVES
   ============================================= */
@@ -113,6 +58,21 @@
   .card-ia {
     grid-column: span 2;
   }
+  .domaines-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* au lieu de space-between ou space-around */
+  gap: 12px; /* espace simple entre chaque élément */
+  width: auto; /* ne prend pas toute la largeur */
+}
+
+.domaines-bar__label {
+  flex: 0 0 auto; /* empêche l'étirement */
+}
+
+.domaines-bar__badge {
+  flex: 0 0 auto; /* empêche l'étirement */
+}
 
   /* =============================================
      CTA FINAL
